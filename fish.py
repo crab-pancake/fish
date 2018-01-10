@@ -38,7 +38,7 @@ def new_acct():
           if pw == pwconfirm:
             writer.writerow(['Password', pw])
             print 'Password confirmed, please log in to your account.'
-            writer.close() #testing if closing first will write the stuff to the file before log_in is called
+            playerfile.close() #closing first will write the stuff to the file before log_in is called, avoids indexerror
             log_in()
             break
           else:

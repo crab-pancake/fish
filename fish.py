@@ -47,25 +47,21 @@ def new_acct():
 def log_in():
   uname = raw_input("Enter your account name to login.\n>> ")
   print 'Logging in to account %s...' % (uname)
-  with open(uname+'.csv', 'rb') as playerfile:
-    reader = csv.reader(playerfile)
-    password=[row for i, row in enumerate(reader) if i == 2][0][1]
-    print password
-    pword = raw_input("Please type your password.\n>> ")
-    if password == pword:
-      print 'Successfully logged in to account %s.' % (uname)
-      execfile('gamecode.py')
-    else:
-      print 'Sorry, the username and password didn\'t match.'
-      acct_ask()
-
-  #try:
-    #acct = open(uname+'.csv', 'rb')
-
-    playerfile.close()
-  #except IOError:
-    #print 'Account by the name of %s doesn\'t exist.' % (uname)
-    #acct_ask()
+  try:
+    with open(uname+'.csv', 'rb') as playerfile:
+      reader = csv.reader(playerfile)
+      password=[row for i, row in enumerate(reader) if i == 2][0][1]
+      print password
+      pword = raw_input("Please type your password.\n>> ")
+      if password == pword:
+        print 'Successfully logged in to account %s.' % (uname)
+        execfile('gamecode.py')
+      else:
+        print 'Sorry, the username and password didn\'t match.'
+        acct_ask()
+  except IOError:
+    print 'Account by the name of %s doesn\'t exist.' % (uname)
+    acct_ask()
 
 acct_ask()
 

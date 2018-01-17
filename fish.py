@@ -48,6 +48,8 @@ def log_in():
   uname = raw_input("Enter your account name to login.\n>> ")
   print 'Logging in to account %s...' % (uname)
   try:
+    playerfile = open(uname+'.csv', 'rb')
+    playerfile.close()
     with open(uname+'.csv', 'rb') as playerfile:
       reader = csv.reader(playerfile)
       password=[row for i, row in enumerate(reader) if i == 2][0][1]

@@ -45,6 +45,7 @@ def new_acct():
             print 'Sorry, the passwords didn\'t match.'
 
 def log_in():
+  global uname#
   uname = raw_input("Enter your account name to login.\n>> ")
   print 'Logging in to account %s...' % (uname)
   try:
@@ -52,7 +53,8 @@ def log_in():
     playerfile.close()
     with open(uname+'.csv', 'rb') as playerfile:
       reader = csv.reader(playerfile)
-      password=[row for i, row in enumerate(reader) if i == 2][0][1]
+      stats = dict(reader)
+      password=stats["Password"]#[row for i, row in enumerate(reader) if i == 2][0][1]
       print password
       pword = raw_input("Please type your password.\n>> ")
       if password == pword:

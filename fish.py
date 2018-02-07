@@ -23,7 +23,7 @@ def new_acct():
     acct_ask()
   except IOError:
     print 'Creating account with username %s...' % (uname)
-    with open(uname+'_g_info.csv', 'wb') as playerfile:
+    with open(uname+'.csv', 'wb') as playerfile:#+'_g_info.csv'
       writer = csv.writer(playerfile, dialect = 'excel')
       writer.writerow(['Create Time', time.time()])
       writer.writerow(['Last Login', time.time()])

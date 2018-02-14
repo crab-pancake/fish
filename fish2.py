@@ -45,7 +45,6 @@ def new_acct():
     acct_ask()
 
 def log_in():
-  #global uname #what does this do?
   uname = input("Enter your account name to login.\n>> ")
   print ('Logging in to account %s...' % (uname))
   try:

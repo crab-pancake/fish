@@ -2,8 +2,6 @@ import random
 import csv
 import time
 
-print('uname:',uname)
-
 class User_s(object):
     """user stats file for times and such."""
     def __init__(self, f_time_raw, p_time_raw, pword, delta, uname):

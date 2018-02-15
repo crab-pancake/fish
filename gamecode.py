@@ -10,6 +10,9 @@ class User_s(object):
         self.pword = pword
         self.delta = float(p_time_raw) - float(f_time_raw)
         self.uname = uname
+        self.f_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(f_time_raw)))
+        self.p_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(p_time_raw)))
+        self.hsll = (float(time.time()) - float(p_time_raw))/3600
     def update_time(self):
         self.p_time_raw = time.time()
     def save(self):
@@ -28,8 +31,7 @@ class User_g(object):
         self.uname = uname
     def fish_away(self):
         while True:
-            fish = input("Would you like to fish? Press Y for yes, N for no.\n").lower()
-            print ("Fish =",fish+".")
+            fish = input("Would you like to fish? Press Y for yes, N for no.\n>> ").lower()
             if fish == "y":
                 if self.f_j >0:
                     self.f_j -= 1
@@ -108,23 +110,15 @@ class User_g(object):
                "-------------------------\n"
                "Fishing juice: {}\nMackerel: {}\nCockles: {} \nShiny Magikarp: {}".format(self.f_j, self.mackerel, self.cockle, self.s_karp))
 
-player_s = User_s(stats["Create Time"],
-                  stats["Last Login"],
-                  stats["Password"],
-                  uname)
-
-f_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(player_s.f_time_raw)))
-p_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(player_s.p_time_raw)))
-h_s_l_login = (float(time.time()) - float(player_s.p_time_raw))/3600 #make this a function of the player
+player_s = User_s(stats["Create Time"], stats["Last Login"], stats["Password"], uname)
 
 if player_s.p_time_raw == '0': #If this is the first access of the game, then ptimeraw == 0
     print('running first mode') #for debug purposes
     player_s.update_time()
     player_s.save()
     player_g = User_g(10,0,0,0,uname)
-    print ("Welcome to the game!\n"
-           "Your very first login time: %s\n"
-           "Hours since last login: %s\n" %(f_time, h_s_l_login))
+    print ("Welcome to the game! This is your first login. \n"
+           "Account creation time: %s"%(player_s.f_time))
     player_g.display_menu()
 
 elif player_s.delta > 0: 
@@ -133,14 +127,15 @@ elif player_s.delta > 0:
     player_s.update_time()
     player_s.save()
     player_g.load()
-    player_g.f_j += int(h_s_l_login)
+    player_g.f_j += int(player_s.hsll)
+    print(player_g.f_j)
     print ("___________________\n"
            "Welcome back to the game!\n"
-           "Your very first login time: %s\n"
-           "Hours since last login: %s\n\n"
-           "Blocks of fishing juice you've acquired since the last login: %s\n\n"
-           "HINT: you get 1 unit of juice per hour elapsed between the current and last logins.\n\n" %(f_time, h_s_l_login, int(h_s_l_login)))
+           "Account creation time: %s\n"
+           "Time since last login: %s\n\n"
+           "Blocks of fishing juice you've acquired since the last login: %s\n\n"   
+           "HINT: you get 1 unit of juice per hour elapsed between the current and last logins.\n\n" %(player_s.f_time, player_s.hsll, int(player_s.hsll)))
     player_g.display_menu()
 
-elif (player_s.delta < 0): #not working for some reason: fix this.
+elif (player_s.delta < 0):
     print("Error happened.")

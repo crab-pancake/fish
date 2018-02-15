@@ -63,10 +63,9 @@ class User_g(object):
         self.save()
     def save(self):
         inv = {"f_j":self.f_j, "mackerel": self.mackerel, "cockle": self.cockle, "s_karp": self.s_karp}
-        with open(self.uname+'_g_info.csv', 'w', newline='') as gamefile: 
-            writer = csv.writer(gamefile, dialect = 'excel')
-            for key, value in inv.items():
-                writer.writerow([key, value])
+        writer = csv.writer(open(self.uname+'_g_info.csv', 'w', newline=''), dialect = 'excel')
+        for key, value in inv.items():
+            writer.writerow([key, value])
     def load(self):
         reader = csv.reader(open(self.uname+'_g_info.csv', 'r'))
         inv = dict(reader)

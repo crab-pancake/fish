@@ -4,28 +4,19 @@ import time
 
 class User_s(object):
     """user stats file for times and such."""
-    def __init__(self, f_time_raw, p_time_raw, pword, delta, uname):
+    def __init__(self, f_time_raw, p_time_raw, pword, uname):
         self.f_time_raw = f_time_raw
         self.p_time_raw = p_time_raw
         self.pword = pword
-        self.delta = delta
+        self.delta = float(p_time_raw) - float(f_time_raw)
         self.uname = uname
-    #def get_init_times(self):
-    #    with open(uname+'.csv', 'r') as csv_file:
-    #        reader = csv.reader(csv_file)
-    #        stats = dict(reader)
-    #        self.f_time_raw = stats["Create Time"]
-    #        self.p_time_raw = stats["Last Login"]
-    #        self.pword = stats["Password"]
-    #        self.delta = int(stats["Last Login"]) - int(stats["Create Time"])
     def update_time(self):
         self.p_time_raw = time.time()
     def save(self):
         stats = {"Create Time":self.f_time_raw, "Last Login": self.p_time_raw, "Password":self.pword}
-        with open(self.uname+'.csv', 'w', newline='') as gamefile: 
-            writer = csv.writer(gamefile, dialect='excel')
-            for key, value in stats.items():
-                writer.writerow([key, value])
+        writer = csv.writer(open(self.uname+'.csv', 'w', newline=''), dialect='excel')
+        for key, value in stats.items():
+            writer.writerow([key, value])
 
 class User_g(object):
     """ A User's account. Defines the amount of fishing juice and starting items."""
@@ -77,23 +68,16 @@ class User_g(object):
             for key, value in inv.items():
                 writer.writerow([key, value])
     def load(self):
-        with open(self.uname+'_g_info.csv', 'r') as csv_file:
-            reader = csv.reader(csv_file)
-            inv = dict(reader)
-            self.f_j = int(inv["f_j"])
-            self.mackerel = int(inv["mackerel"])
-            self.cockle = int(inv["cockle"])
-            self.s_karp = int(inv["s_karp"])
+        reader = csv.reader(open(self.uname+'_g_info.csv', 'r'))
+        inv = dict(reader)
+        self.f_j = int(inv["f_j"])
+        self.mackerel = int(inv["mackerel"])
+        self.cockle = int(inv["cockle"])
+        self.s_karp = int(inv["s_karp"])
     def shop_display(self):
         print("Coles")
     def help_display(self):
-        print("\nHELP\n"
-            "\n----------------------------\n"
-            "\nHistory:\nJerry and Dayu thought of this game as they were walking with Evan and Mummy, along Lake Nordonskjold, W-Trek, Patagonia, Chile in late December 2017. The inspiration came from many hours of idle chat, but at least it encouraged them to do somethiing productive!\n"
-            "\nAim:\nThis is a time based game, where you as the player character gather 'fishing juice' to catch fish, upgrade your setup and further your fishing capabilities.\n"
-            "\nInitial setup:\nYou'll begin with 10 fishing juice and no fish. Under the 'Menu' option, choose 'Fish!' to use up your fishing juice and catch fish. Each time you'll have a go at fishing and deplete your fishing juice by one. You'll gather more fishing juice by logging off (1 per hour is the base rate) and relogging on.\n"
-            "\nBuying and selling:\n Enter the corresponding number 'Visit shop' in order to buy and sell your fish to gain gold. Use your gold to upgrade your fishing set up. For example, the cheapest upgrade will is the 'Reinforced net', which will increase your fishing juice gathering rate by 10%.\n"
-            "\nFinal words:\n Good luck! We'll be slowly adding in extra features, but be patient as we are new :3")
+        print("help me pls")
     def display_menu(self):
     	while True:
             menu = input("\nMENU\n"
@@ -128,17 +112,14 @@ class User_g(object):
 player_s = User_s(stats["Create Time"],
                   stats["Last Login"],
                   stats["Password"],
-                  float(stats["Last Login"]) - float(stats["Create Time"]),
                   uname)
-print('delta:',player_s.delta)
-print(player_s.p_time_raw,"ptimeraw")
 
 f_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(player_s.f_time_raw)))
 p_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(player_s.p_time_raw)))
 h_s_l_login = (float(time.time()) - float(player_s.p_time_raw))/3600 #make this a function of the player
 
-if player_s.delta == 0: #If this is the first access of the game, then ptimeraw == 0
-    print('running first mode')
+if player_s.p_time_raw == '0': #If this is the first access of the game, then ptimeraw == 0
+    print('running first mode') #for debug purposes
     player_s.update_time()
     player_s.save()
     player_g = User_g(10,0,0,0,uname)
@@ -148,14 +129,12 @@ if player_s.delta == 0: #If this is the first access of the game, then ptimeraw 
     player_g.display_menu()
 
 elif player_s.delta > 0: 
-    print('running second mode')
+    print('running second mode') #for debug purposes
     player_g = User_g(0,0,0,0,uname)
-    print(h_s_l_login)
     player_s.update_time()
     player_s.save()
     player_g.load()
     player_g.f_j += int(h_s_l_login)
-    print(player_g.f_j)
     print ("___________________\n"
            "Welcome back to the game!\n"
            "Your very first login time: %s\n"
@@ -164,8 +143,5 @@ elif player_s.delta > 0:
            "HINT: you get 1 unit of juice per hour elapsed between the current and last logins.\n\n" %(f_time, h_s_l_login, int(h_s_l_login)))
     player_g.display_menu()
 
-elif (player_s.delta < 0 and player_s.p_time_raw): #not working for some reason: fix this.
-    print("running error mode")
-    print(player_s.p_time_raw)
-    print(bool(player_s.p_time_raw))
-    print(player_s.p_time_raw)
+elif (player_s.delta < 0): #not working for some reason: fix this.
+    print("Error happened.")

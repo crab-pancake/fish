@@ -4,77 +4,76 @@ import time
 
 class User_s(object):
     """user stats file for times and such."""
-    def __init__(self, f_time_raw, p_time_raw, pword, uname):
+    def __init__(self, f_time_raw, p_time_raw, pw, uname):
         self.f_time_raw = f_time_raw
         self.p_time_raw = p_time_raw
-        self.pword = pword
+        self.pw = pw
         self.delta = float(p_time_raw) - float(f_time_raw)
         self.uname = uname
         self.f_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(f_time_raw)))
         self.p_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(p_time_raw)))
-        self.hsll = (float(time.time()) - float(p_time_raw))/3600
+        self.hsll = (time.time() - float(p_time_raw))/3600
     def update_time(self):
         self.p_time_raw = time.time()
     def save(self):
-        stats = {"Create Time":self.f_time_raw, "Last Login": self.p_time_raw, "Password":self.pword}
-        writer = csv.writer(open(self.uname+'.csv', 'w', newline=''), dialect='excel')
-        for key, value in stats.items():
-            writer.writerow([key, value])
+        stats = {"Create Time":self.f_time_raw, "Last Login": self.p_time_raw, "Password":self.pw}
+        with open(self.uname+'.csv', 'w', newline='') as savefile:
+            writer = csv.writer(savefile, dialect='excel')
+            for key, value in stats.items():
+                writer.writerow([key, value])
 
 class User_g(object):
     """ A User's account. Defines the amount of fishing juice and starting items."""
-    def __init__(self, f_j, mackerel, cockle, s_karp, uname):
-        self.f_j = f_j
-        self.mackerel = mackerel
-        self.cockle = cockle
-        self.s_karp = s_karp
+    def __init__(self, uname):
         self.uname = uname
+        self.inv = {}
+        self.allitems = 0
+        with open('allitems.csv', 'r') as allitems:
+            self.allitems = dict(csv.reader(allitems))
+        for key in self.allitems:
+            self.inv[key] = 0      #creates a dictionary called inv and creates keys for all the entries from allitems, sets all quantities to 0
     def fish_away(self):
-        while True:
-            fish = input("Would you like to fish? Press Y for yes, N for no.\n>> ").lower()
-            if fish == "y":
-                if self.f_j >0:
-                    self.f_j -= 1
-                    a = random.randint(1,10)
-                    if a in range(1,4):
-                        self.mackerel += 1
-                        print("You caught a mackerel. Can be caught at lvl 16 in Runescape.")
-                        print ("You have", self.mackerel, "mackerel")
-                        self.suc_fish()
-                    elif a in range(4,7):
-                        self.cockle += 1
-                        print("You caught a cockle. The cockle is a native to Goolwa, where you went as a child.")
-                        print("You have", self.cockle, "cockle.")
-                        self.suc_fish()
-                    elif a in range(7,10):
-                        print("You found nothing unfortunately :(")
-                        self.suc_fish()
-                    elif a == 10:
-                        self.s_karp += 1
-                        print("You caught a shiny Magikarp :D You won the lottery!")
-                        print("You have", self.s_karp,"shiny Magikarp.")
-                        self.suc_fish()
-                if self.f_j <=0:
-                    print ("You have no units of fishing juice left. Try waiting at least another hour.")
-            elif fish == "n":
-                break
-            else:
-                print ("Invalid response, try again.\n")
+        with open('table.csv', 'r') as table: #table.csv will be changed to the player's specific level loottable
+            self.table = dict(csv.reader(table))
+            while True:
+                fish = input("Would you like to fish? Press Y for yes, N for no.\n>> ").lower()
+                if fish == "y":
+                    if self.inv['f_j'] >0:
+                        self.inv['f_j'] -= 1
+                        rng = random.randint(1,100)
+                        catch = False
+                        for key in self.table:
+                            if rng >= int(self.table[key]):
+                                self.inv[key] =  int(self.inv[key]) +1
+                                print("You caught a",key+'.')
+                                print("You have",self.inv[key],key+'.') #how can I add a description? May have to move away from csv files or dictionaries
+                                self.suc_fish()
+                                catch = True
+                                break
+                        if catch == False:
+                            print("You didn't catch anything.")
+                            self.suc_fish()
+                    else:
+                        print ("You have no units of fishing juice left. Try waiting at least another hour.")
+                elif fish == "n":
+                    break
+                else:
+                    print ("Invalid response, try again.\n")
     def suc_fish(self):
-        print ("You have ", self.f_j, "fishing juice remaining.")
+        print ("You have",self.inv['f_j'],"fishing juice remaining.")
         self.save()
-    def save(self):
-        inv = {"f_j":self.f_j, "mackerel": self.mackerel, "cockle": self.cockle, "s_karp": self.s_karp}
-        writer = csv.writer(open(self.uname+'_g_info.csv', 'w', newline=''), dialect = 'excel')
-        for key, value in inv.items():
-            writer.writerow([key, value])
-    def load(self):
-        reader = csv.reader(open(self.uname+'_g_info.csv', 'r'))
-        inv = dict(reader)
-        self.f_j = int(inv["f_j"])
-        self.mackerel = int(inv["mackerel"])
-        self.cockle = int(inv["cockle"])
-        self.s_karp = int(inv["s_karp"])
+    def save(self):   #done
+        with open(self.uname+'_g_info.csv', 'w', newline='') as savefile:
+            writer = csv.writer(savefile, dialect = 'excel')
+            for key, value in self.inv.items():
+                writer.writerow([key, value])
+
+    def load(self):   #done
+        with open(self.uname+'_g_info.csv', 'r') as loadfile:
+            loader = dict(csv.reader(loadfile))
+            for key in loader:
+                self.inv[key] = loader[key]
+
     def shop_display(self):
         print("Coles")
     def help_display(self):
@@ -87,7 +86,7 @@ class User_g(object):
                     "2. Fish!\n"
                     "3. Visit shop (sell and buy items)\n"
                     "4. Help\n"
-                    "5. Exit game\n")
+                    "5. Exit game\n> ")
             if menu =="1":
                 self.inv_display()
             elif menu =="2":
@@ -106,9 +105,9 @@ class User_g(object):
     def error_message(self):
         print ("Try again.")
     def inv_display(self): 
-        print ("YOUR INVENTORY:\n"
-               "-------------------------\n"
-               "Fishing juice: {}\nMackerel: {}\nCockles: {} \nShiny Magikarp: {}".format(self.f_j, self.mackerel, self.cockle, self.s_karp))
+        print("YOUR INVENTORY:\n-------------------------")
+        for key in self.inv:
+            print('%s: %s' % (key, self.inv[key]))
 
 player_s = User_s(stats["Create Time"], stats["Last Login"], stats["Password"], uname)
 
@@ -116,25 +115,26 @@ if player_s.p_time_raw == '0': #If this is the first access of the game, then pt
     print('running first mode') #for debug purposes
     player_s.update_time()
     player_s.save()
-    player_g = User_g(10,0,0,0,uname)
+    player_g = User_g(uname)
+    player_g.inv['f_j'] = 10
     print ("Welcome to the game! This is your first login. \n"
            "Account creation time: %s"%(player_s.f_time))
     player_g.display_menu()
 
 elif player_s.delta > 0: 
     print('running second mode') #for debug purposes
-    player_g = User_g(0,0,0,0,uname)
+    player_g = User_g(uname)
     player_s.update_time()
     player_s.save()
     player_g.load()
-    player_g.f_j += int(player_s.hsll)
-    print(player_g.f_j)
+    player_g.inv['f_j']=int(player_g.inv['f_j'])+int(player_s.hsll)
     print ("___________________\n"
            "Welcome back to the game!\n"
            "Account creation time: %s\n"
-           "Time since last login: %s\n\n"
-           "Blocks of fishing juice you've acquired since the last login: %s\n\n"   
-           "HINT: you get 1 unit of juice per hour elapsed between the current and last logins.\n\n" %(player_s.f_time, player_s.hsll, int(player_s.hsll)))
+           "Time since last login: %s hrs, %s mins\n\n"
+           "You've acquired [ %s ] Blocks of fishing juice since the last login. \n\n"   
+           "HINT: you get 1 unit of juice per hour elapsed between the current and last logins.\n" 
+           %(player_s.f_time, int(player_s.hsll), int((player_s.hsll-int(player_s.hsll))*60), int(player_s.hsll)))
     player_g.display_menu()
 
 elif (player_s.delta < 0):

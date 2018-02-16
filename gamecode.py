@@ -17,7 +17,7 @@ class User_s(object):
         self.p_time_raw = time.time()
     def save(self):
         stats = {"Create Time":self.f_time_raw, "Last Login": self.p_time_raw, "Password":self.pw}
-        with open(self.uname+'.csv', 'w', newline='') as savefile:
+        with open(self.uname+'_i.csv', 'w', newline='') as savefile:
             writer = csv.writer(savefile, dialect='excel')
             for key, value in stats.items():
                 writer.writerow([key, value])

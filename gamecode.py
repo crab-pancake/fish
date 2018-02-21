@@ -3,51 +3,6 @@ import time
 import csv
 
 print('gamecode has started')
-# global obj
-# obj='potato'
-
-# class NewItem(object):
-#     """items"""
-#     def __init__(self, code, name, description, exp, min_level):
-#         self.code = code
-#         self.name = name
-#         self.description = description
-#         self.exp = exp
-#         self.min_level = min_level
-#         self.type = obj
-#         print(obj)
-#     def __str__(self):
-#         return 'Item class object'
-#     def printname(self):
-#         print (self.name)
-
-# class NewFish(NewItem):
-#     def __init__(self, code, name, description, exp, min_level):
-#         super().__init__(code, name, description, exp, min_level)
-#         self.type = 'fish'
-
-# items = {}
-# print(obj)
-# with open('test.csv', 'r') as file:
-#     reader = csv.DictReader(file)
-#     print(obj*2)
-#     for row in reader:
-#         if row['code'] == '002':
-#             item = NewFish(row['code'], row['name'], row['description'], row['exp'], row['min_level'])
-#             print('this happens')
-#         else:
-#             item = NewItem(row['code'], row['name'], row['description'], row['exp'], row['min_level'])
-#             print('this also happens')
-#         print(obj)
-#         items[item.code] = item
-
-# items['002'].printname()
-# print(items['001'].type)
-# print(items['003'].type)
-# print(items['002'].type)
-
-# print(items['003'])
-
 class User_s(object):
     """user stats file for times and such."""
     def __init__(self, f_time_raw, p_time_raw, pw, uname, exp):

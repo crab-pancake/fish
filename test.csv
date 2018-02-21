@@ -1,0 +1,5 @@
+code,name,description,exp,min_level,type
+000,f_j,fishing juice,0,0,bait
+001,mackerel,mackerelfish,1,1,fish
+002,cockle,cockleshell,2,2,fish
+003,s_karp,shiny magikarp,5,5,fish

@@ -23,6 +23,7 @@ def new_acct():
       writer = csv.writer(playerfile, dialect='excel')
       writer.writerow(['Create Time', time.time()])
       writer.writerow(['Last Login',0]) #changed lastlogin to set to 0 when acct is created
+      writer.writerow(['exp',0])
       while True:
         pw = input("Enter a password longer than 3 characters, or type 'back' to cancel.\n>>")
         if pw.lower() == 'back':
@@ -46,14 +47,16 @@ def new_acct():
 
 def log_in():
   uname = input("Enter your account name to login.\n>> ").strip()
+  global playername
   print ('Logging in to account %s...' % (uname))
   acc_path = Path("./%s_i.csv" % (uname))  #put this into lower line?
   if acc_path.is_file():
     with open(uname+'_i.csv', 'r') as file:
-      stats = dict(csv.reader(file))
+      playerfile = dict(csv.reader(file))
       pw = input("Please type your password.\n>> ")
-      if pw == stats['Password']:
+      if pw == playerfile['Password']:
         print ('Successfully logged in to account %s.' % (uname))
+        print('done')
         exec(open('./gamecode.py').read())
       else:
         print ('Sorry, the username and password didn\'t match.')
@@ -61,5 +64,7 @@ def log_in():
   else:
     print ('Account by the name of %s doesn\'t exist.' % (uname))
     acct_ask()
+
+
 
 acct_ask()

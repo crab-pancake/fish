@@ -2,9 +2,55 @@ import random
 import time
 import csv
 
+print('gamecode has started')
+# global obj
+# obj='potato'
+
+# class NewItem(object):
+#     """items"""
+#     def __init__(self, code, name, description, exp, min_level):
+#         self.code = code
+#         self.name = name
+#         self.description = description
+#         self.exp = exp
+#         self.min_level = min_level
+#         self.type = obj
+#         print(obj)
+#     def __str__(self):
+#         return 'Item class object'
+#     def printname(self):
+#         print (self.name)
+
+# class NewFish(NewItem):
+#     def __init__(self, code, name, description, exp, min_level):
+#         super().__init__(code, name, description, exp, min_level)
+#         self.type = 'fish'
+
+# items = {}
+# print(obj)
+# with open('test.csv', 'r') as file:
+#     reader = csv.DictReader(file)
+#     print(obj*2)
+#     for row in reader:
+#         if row['code'] == '002':
+#             item = NewFish(row['code'], row['name'], row['description'], row['exp'], row['min_level'])
+#             print('this happens')
+#         else:
+#             item = NewItem(row['code'], row['name'], row['description'], row['exp'], row['min_level'])
+#             print('this also happens')
+#         print(obj)
+#         items[item.code] = item
+
+# items['002'].printname()
+# print(items['001'].type)
+# print(items['003'].type)
+# print(items['002'].type)
+
+# print(items['003'])
+
 class User_s(object):
     """user stats file for times and such."""
-    def __init__(self, f_time_raw, p_time_raw, pw, uname):
+    def __init__(self, f_time_raw, p_time_raw, pw, uname, exp):
         self.f_time_raw = f_time_raw
         self.p_time_raw = p_time_raw
         self.pw = pw
@@ -13,14 +59,16 @@ class User_s(object):
         self.f_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(f_time_raw)))
         self.p_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(p_time_raw)))
         self.hsll = (time.time() - float(p_time_raw))/3600
+        self.exp = exp
     def update_time(self):
         self.p_time_raw = time.time()
     def save(self):
-        stats = {"Create Time":self.f_time_raw, "Last Login": self.p_time_raw, "Password":self.pw}
+        stats = {"Create Time":self.f_time_raw, "Last Login": self.p_time_raw, "Password":self.pw, "exp": self.exp}
         with open(self.uname+'_i.csv', 'w', newline='') as savefile:
             writer = csv.writer(savefile, dialect='excel')
             for key, value in stats.items():
                 writer.writerow([key, value])
+
 
 class Item(object):
     """items"""
@@ -34,39 +82,58 @@ class Item(object):
     def __str__(self):
         return "Item with code %s, name %s" % (self.code, self.name)
     def __repr__(self):
-        return "Item(self, %s, %s, %s, %s, %s)" % (self.code, self.name, self.description, self.exp, self.min_level)
+        return "Item(self, %r, %r, %r, %r, %r)" % (self.code, self.name, self.description, self.exp, self.min_level)
+
 class Fish(Item):
     def __init__(self, code, name, description, exp, min_level):
         super().__init__(code, name, description, exp, min_level)
         self.type = 'fish'
         self.sell_price = 5
     def __str__(self):
-        return "Fish with code %s, name %s" % (self.code, self.name)
+        return "Fish item with code %s, name %s" % (self.code, self.name)
     def __repr__(self):
-        return "Fish(self, %s, %s, %s, %s, %s)" % (self.code, self.name, self.description, self.exp, self.min_level)
+        return "Fish(self, %r, %r, %r, %r, %r)" % (self.code, self.name, self.description, self.exp, self.min_level)
+
 class Bait(Item):
-    def __init__(self,a):
+    def __init__(self, code, name, description, exp, min_level):
         super().__init__(code, name, description, exp, min_level)
         self.type = 'bait'
     def __str__(self):
-        return "Bait with code %s, name %s" % (self.code, self.name)
+        return "Bait item with code %s, name %s" % (self.code, self.name)
     def __repr__(self):
-        return "Bait(self, %s, %s, %s, %s, %s)" % (self.code, self.name, self.description, self.exp, self.min_level)
+        return "Bait(self, %r, %r, %r, %r, %r)" % (self.code, self.name, self.description, self.exp, self.min_level)
+
 class Material(Item):
-    def __init__(self,a):
+    def __init__(self, code, name, description, exp, min_level):
         super().__init__(code, name, description, exp, min_level)
         self.type = 'material'
+    def __str__(self):
+        return "Material item with code %s, name %s" % (self.code, self.name)
+    def __repr__(self):
+        return "Material(self, %r, %r, %r, %r, %r)" % (self.code, self.name, self.description, self.exp, self.min_level)
 
-items = {}
+global ListOfItems
+ListOfItems = {}
+print('listofitems has been made')
+with open('test.csv', 'r') as readfile:
+    reader = csv.DictReader(readfile)
+    for row in reader:
+        # if row['i_type'] == 'fish':
+        #     ThisItem = Fish(row['code'], row['name'], row['description'], row['exp'], row['min_level'])
+        #     ListOfItems[ThisItem.code] = ThisItem
+        # elif row['i_type'] == 'bait':
+        #     ThisItem = Bait(row['code'], row['name'], row['description'], row['exp'], row['min_level'])
+        #     ListOfItems[ThisItem.code] = ThisItem
+        # else:
+        ThisItem = Item(row['code'], row['name'], row['description'], row['exp'], row['min_level'])
+        ListOfItems[ThisItem.code] = ThisItem
 
 class User_g(object):
-    """ A User's account. Defines the amount of fishing juice and starting items."""
+    """Docstring"""
     def __init__(self, uname):
         self.uname = uname
         self.inv = {}
-        self.allitems = 0
-        with open('allitems.csv', 'r') as allitems:   #allitems is stored as itemabbrev: item display name. Eventually change this to a dictreader object
-            self.allitems = dict(csv.reader(allitems))
+        self.allitems = ListOfItems
         for key in self.allitems:
             self.inv[key] = 0      #creates a dictionary called inv and creates keys for all the entries from allitems, sets all quantities to 0
     def load(self):   #done
@@ -85,29 +152,31 @@ class User_g(object):
             while True:
                 fish = input("Would you like to fish? Press Y for yes, N for no.\n>> ").strip().lower()
                 if fish == "y":
-                    if self.inv['f_j'] >0:
-                        self.inv['f_j'] -= 1
+                    if self.inv['000'] >0:
+                        self.inv['000'] -= 1
                         rng = random.randint(1,100)
                         catch = False
                         for key in self.table:
                             if rng >= int(self.table[key]):
                                 self.inv[key] =  int(self.inv[key]) +1
-                                print("You caught a",key+'.')
-                                print("You have",self.inv[key],key+'.') #how can I add a description? May have to move away from csv files or dictionaries
-                                self.suc_fish()
+                                print("You caught a [",self.allitems[key].name,'] .')
+                                print("You have",self.inv[key],self.allitems[key].name+'.')
+                                self.suc_fish(key)
                                 catch = True
                                 break
                         if catch == False:
                             print("You didn't catch anything.")
-                            self.suc_fish()
+                            self.suc_fish('000')
                     else:
                         print ("You have no units of fishing juice left. Try waiting at least another hour.")
                 elif fish == "n":
                     break
                 else:
                     print ("Invalid response, try again.\n")
-    def suc_fish(self):
-        print ("You have",self.inv['f_j'],"fishing juice remaining.")
+    def suc_fish(self, fish):
+        print ("You have",self.inv['000'],"fishing juice remaining.")
+        player_s.exp = int(player_s.exp)
+        player_s.exp += int(self.allitems[fish].exp)
         self.save()
 
     def shop_display(self):
@@ -143,19 +212,21 @@ class User_g(object):
     def inv_display(self): 
         print("YOUR INVENTORY:\n-------------------------")
         for key in self.inv:
-            print('%s: %s' % (self.allitems[key], self.inv[key]))
+            print('%s: %s' % (self.allitems[key].name, self.inv[key]))
 
-player_s = User_s(stats["Create Time"], stats["Last Login"], stats["Password"], uname)
+global player_s
+player_s = User_s(playerfile["Create Time"], playerfile["Last Login"], playerfile["Password"], uname, playerfile["exp"])
 
 if player_s.p_time_raw == '0': #If this is the first access of the game, then ptimeraw == 0
     print('running first mode') #for debug purposes
     player_s.update_time()
     player_s.save()
     player_g = User_g(uname)
-    player_g.inv['f_j'] = 10  #when a new account is created, 10 fishing juice is given
+    player_g.inv['000'] = 10  #when a new account is created, 10 fishing juice is given
     print ("Welcome to the game! This is your first login. \n"
            "Account creation time: %s"%(player_s.f_time))
     player_g.display_menu()
+    player_s.save()
 
 elif player_s.delta > 0: 
     print('running second mode') #for debug purposes
@@ -163,7 +234,7 @@ elif player_s.delta > 0:
     player_s.update_time()
     player_s.save()
     player_g.load()
-    player_g.inv['f_j']=int(player_g.inv['f_j'])+int(player_s.hsll)
+    player_g.inv['000']=int(player_g.inv['000'])+int(player_s.hsll)
     print ("___________________\n"
            "Welcome back to the game!\n"
            "Account creation time: %s\n"
@@ -172,6 +243,8 @@ elif player_s.delta > 0:
            "HINT: you get 1 unit of juice per hour elapsed between the current and last logins.\n" 
            %(player_s.f_time, int(player_s.hsll), int((player_s.hsll-int(player_s.hsll))*60), int(player_s.hsll)))
     player_g.display_menu()
+    player_s.save()
 
 elif (player_s.delta < 0):
     print("Error happened.")
+    player_s.close()

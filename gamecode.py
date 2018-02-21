@@ -1,6 +1,6 @@
 import random
-import csv
 import time
+import csv
 
 class User_s(object):
     """user stats file for times and such."""
@@ -22,21 +22,68 @@ class User_s(object):
             for key, value in stats.items():
                 writer.writerow([key, value])
 
+class Item(object):
+    """items"""
+    def __init__(self, code, name, description, exp, min_level):
+        self.code = code
+        self.name = name
+        self.description = description
+        self.exp = exp
+        self.min_level = min_level
+        self.type = 'other'
+    def __str__(self):
+        return "Item with code %s, name %s" % (self.code, self.name)
+    def __repr__(self):
+        return "Item(self, %s, %s, %s, %s, %s)" % (self.code, self.name, self.description, self.exp, self.min_level)
+class Fish(Item):
+    def __init__(self, code, name, description, exp, min_level):
+        super().__init__(code, name, description, exp, min_level)
+        self.type = 'fish'
+        self.sell_price = 5
+    def __str__(self):
+        return "Fish with code %s, name %s" % (self.code, self.name)
+    def __repr__(self):
+        return "Fish(self, %s, %s, %s, %s, %s)" % (self.code, self.name, self.description, self.exp, self.min_level)
+class Bait(Item):
+    def __init__(self,a):
+        super().__init__(code, name, description, exp, min_level)
+        self.type = 'bait'
+    def __str__(self):
+        return "Bait with code %s, name %s" % (self.code, self.name)
+    def __repr__(self):
+        return "Bait(self, %s, %s, %s, %s, %s)" % (self.code, self.name, self.description, self.exp, self.min_level)
+class Material(Item):
+    def __init__(self,a):
+        super().__init__(code, name, description, exp, min_level)
+        self.type = 'material'
+
+items = {}
+
 class User_g(object):
     """ A User's account. Defines the amount of fishing juice and starting items."""
     def __init__(self, uname):
         self.uname = uname
         self.inv = {}
         self.allitems = 0
-        with open('allitems.csv', 'r') as allitems:
+        with open('allitems.csv', 'r') as allitems:   #allitems is stored as itemabbrev: item display name. Eventually change this to a dictreader object
             self.allitems = dict(csv.reader(allitems))
         for key in self.allitems:
             self.inv[key] = 0      #creates a dictionary called inv and creates keys for all the entries from allitems, sets all quantities to 0
-    def fish_away(self):
+    def load(self):   #done
+        with open(self.uname+'_g_info.csv', 'r') as loadfile:
+            loader = dict(csv.reader(loadfile))
+            for key in loader:
+                self.inv[key] = loader[key]
+    def save(self):   #done
+        with open(self.uname+'_g_info.csv', 'w', newline='') as savefile:
+            writer = csv.writer(savefile, dialect = 'excel')
+            for key, value in self.inv.items():
+                writer.writerow([key, value])
+    def fish_away(self):   #update so that catching nothing is determined first, then chance of each fish
         with open('table.csv', 'r') as table: #table.csv will be changed to the player's specific level loottable
             self.table = dict(csv.reader(table))
             while True:
-                fish = input("Would you like to fish? Press Y for yes, N for no.\n>> ").lower()
+                fish = input("Would you like to fish? Press Y for yes, N for no.\n>> ").strip().lower()
                 if fish == "y":
                     if self.inv['f_j'] >0:
                         self.inv['f_j'] -= 1
@@ -62,28 +109,11 @@ class User_g(object):
     def suc_fish(self):
         print ("You have",self.inv['f_j'],"fishing juice remaining.")
         self.save()
-    def save(self):   #done
-        with open(self.uname+'_g_info.csv', 'w', newline='') as savefile:
-            writer = csv.writer(savefile, dialect = 'excel')
-            for key, value in self.inv.items():
-                writer.writerow([key, value])
-
-    def load(self):   #done
-        with open(self.uname+'_g_info.csv', 'r') as loadfile:
-            loader = dict(csv.reader(loadfile))
-            for key in loader:
-                self.inv[key] = loader[key]
 
     def shop_display(self):
         print("Coles")
     def help_display(self):
-        print("\nHELP\n"
-            "\n----------------------------\n"
-            "\nHistory:\nJerry and Dayu thought of this game as they were walking with Evan and Mummy, along Lake Nordonskjold, W-Trek, Patagonia, Chile in late December 2017. The inspiration came from many hours of idle chat, but at least it encouraged them to do somethiing productive!\n"
-            "\nAim:\nThis is a time based game, where you as the player character gather 'fishing juice' to catch fish, upgrade your setup and further your fishing capabilities.\n"
-            "\nInitial setup:\nYou'll begin with 10 fishing juice and no fish. Under the 'Menu' option, choose 'Fish!' to use up your fishing juice and catch fish. Each time you'll have a go at fishing and deplete your fishing juice by one. You'll gather more fishing juice by logging off (1 per hour is the base rate) and relogging on.\n"
-            "\nBuying and selling:\n Enter the corresponding number 'Visit shop' in order to buy and sell your fish to gain gold. Use your gold to upgrade your fishing set up. For example, the cheapest upgrade will is the 'Reinforced net', which will increase your fishing juice gathering rate by 10%.\n"
-            "\nFinal words:\n Good luck! We'll be slowly adding in extra features, but be patient as we are new :3")
+        print("help me pls")
     def display_menu(self):
     	while True:
             menu = input("\nMENU\n"
@@ -113,7 +143,7 @@ class User_g(object):
     def inv_display(self): 
         print("YOUR INVENTORY:\n-------------------------")
         for key in self.inv:
-            print('%s: %s' % (key, self.inv[key]))
+            print('%s: %s' % (self.allitems[key], self.inv[key]))
 
 player_s = User_s(stats["Create Time"], stats["Last Login"], stats["Password"], uname)
 
@@ -122,7 +152,7 @@ if player_s.p_time_raw == '0': #If this is the first access of the game, then pt
     player_s.update_time()
     player_s.save()
     player_g = User_g(uname)
-    player_g.inv['f_j'] = 10
+    player_g.inv['f_j'] = 10  #when a new account is created, 10 fishing juice is given
     print ("Welcome to the game! This is your first login. \n"
            "Account creation time: %s"%(player_s.f_time))
     player_g.display_menu()
@@ -138,7 +168,7 @@ elif player_s.delta > 0:
            "Welcome back to the game!\n"
            "Account creation time: %s\n"
            "Time since last login: %s hrs, %s mins\n\n"
-           "You've acquired [ %s ] Blocks of fishing juice since the last login. \n\n"   
+           "You've acquired [ %s ] unit(s) of fishing juice since the last login. \n"   
            "HINT: you get 1 unit of juice per hour elapsed between the current and last logins.\n" 
            %(player_s.f_time, int(player_s.hsll), int((player_s.hsll-int(player_s.hsll))*60), int(player_s.hsll)))
     player_g.display_menu()

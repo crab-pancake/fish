@@ -1,7 +1,10 @@
-f_j,0
-mackerel,0
-cockle,2
-s_karp,0
-chicken,5
-cows,18
-doggo,3
+code,item_name,description,exp,min_level,h0,h1,h2,h3,i_type
+00000,f_j,Fishing Juice,0,0,0,0,0,0,bait
+00001,gold,Gold Pieces,0,0,0,0,0,0,misc
+01001,mackerel,Mackerel,1,1,0,0,0,0,fish
+01002,cockle,Cockle,2,2,0,0,0,0,fish
+01003,s_karp,Shiny Magikarp,5,5,0,0,0,0,fish
+02001,net,Basic Net,0,1,0,0,0,0,equipment
+02002,d_net,Drift Net,0,5,0,0,0,0,equipment
+02003,c_net,Cast Net,0,10,0,0,0,0,equipment
+02004,ps_net,Purse Seine,0,20,0,0,0,0,equipment

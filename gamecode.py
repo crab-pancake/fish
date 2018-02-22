@@ -26,12 +26,17 @@ class User_s(object):
 
 class Item(object):
     """items"""
-    def __init__(self, code, item_name, description, exp, min_level):
+    def __init__(self, code, item_name, description, exp, min_level, h0, h1, h2, h3, i_type):
         self.code = code
         self.item_name = item_name
         self.description = description
         self.exp = exp
         self.min_level = min_level
+        self.h0 = h0
+        self.h1 = h1
+        self.h2 = h2
+        self.h3 = h3
+        self.i_type = i_type
         self.type = 'other'
     def __str__(self):
         return "Item with code %s, name %s" % (self.code, self.item_name)
@@ -39,8 +44,8 @@ class Item(object):
         return "Item(self, %r, %r, %r, %r, %r)" % (self.code, self.item_name, self.description, self.exp, self.min_level)
 
 class Fish(Item):
-    def __init__(self, code, item_name, description, exp, min_level):
-        super().__init__(code, item_name, description, exp, min_level)
+    def __init__(self, code, item_name, description, exp, min_level, h0, h1, h2, h3, i_type):
+        super().__init__(code, item_name, description, exp, min_level, h0, h1, h2, h3, i_type)
         self.type = 'fish'
         self.sell_price = 5
     def __str__(self):
@@ -49,8 +54,8 @@ class Fish(Item):
         return "Fish(self, %r, %r, %r, %r, %r)" % (self.code, self.item_name, self.description, self.exp, self.min_level)
 
 class Bait(Item):
-    def __init__(self, code, item_name, description, exp, min_level):
-        super().__init__(code, item_name, description, exp, min_level)
+    def __init__(self, code, item_name, description, exp, min_level, h0, h1, h2, h3, i_type):
+        super().__init__(code, item_name, description, exp, min_level, h0, h1, h2, h3, i_type)
         self.type = 'bait'
     def __str__(self):
         return "Bait item with code %s, name %s" % (self.code, self.item_name)
@@ -58,8 +63,8 @@ class Bait(Item):
         return "Bait(self, %r, %r, %r, %r, %r)" % (self.code, self.item_name, self.description, self.exp, self.min_level)
 
 class Material(Item):
-    def __init__(self, code, item_name, description, exp, min_level):
-        super().__init__(code, item_name, description, exp, min_level)
+    def __init__(self, code, item_name, description, exp, min_level, h0, h1, h2, h3, i_type):
+        super().__init__(code, item_name, description, exp, min_level, h0, h1, h2, h3, i_type)
         self.type = 'material'
     def __str__(self):
         return "Material item with code %s, name %s" % (self.code, self.item_name)
@@ -73,13 +78,13 @@ with open('allitems.csv', 'r') as readfile:
     reader = csv.DictReader(readfile)
     for row in reader:
         if row['i_type'] == 'fish':
-            ThisItem = Fish(row['code'], row['item_name'], row['description'], row['exp'], row['min_level'])
+            ThisItem = Fish(row['code'], row['item_name'], row['description'], row['exp'], row['min_level'], row['h0'], row['h1'], row['h2'], row['h3'], row['i_type'])
             ListOfItems[ThisItem.code] = ThisItem
         elif row['i_type'] == 'bait':
-            ThisItem = Bait(row['code'], row['item_name'], row['description'], row['exp'], row['min_level'])
+            ThisItem = Bait(row['code'], row['item_name'], row['description'], row['exp'], row['min_level'], row['h0'], row['h1'], row['h2'], row['h3'], row['i_type'])
             ListOfItems[ThisItem.code] = ThisItem
         else:
-            ThisItem = Item(row['code'], row['item_name'], row['description'], row['exp'], row['min_level'])
+            ThisItem = Item(row['code'], row['item_name'], row['description'], row['exp'], row['min_level'], row['h0'], row['h1'], row['h2'], row['h3'], row['i_type'])
         ListOfItems[ThisItem.code] = ThisItem
 
 class User_g(object):
@@ -94,7 +99,7 @@ class User_g(object):
         with open(self.uname+'_g_info.csv', 'r') as loadfile:
             loader = dict(csv.reader(loadfile))
             for key in loader:
-                self.inv[key] = loader[key]
+                self.inv[key] = int(loader[key])
     def save(self):   #done
         with open(self.uname+'_g_info.csv', 'w', newline='') as savefile:
             writer = csv.writer(savefile, dialect = 'excel')
@@ -134,7 +139,42 @@ class User_g(object):
         self.save()
 
     def shop_display(self):
-        print("Coles")
+        while True:
+            shop = input("\nWelcome to the General Store. Here you can sell your hard earned fish and purchase new equipment to upgrade your fishing capabilities. \nPress 's' to sell items and 'b' to purchase items.")
+            if shop == 's':
+                self.shop_sell()
+            # if shop == 'b':
+            #     self.shop_buy()
+    def shop_sell(self):
+        while True:
+            print("\nYou have the following fish available for sale:\n")
+            for key in self.inv:
+                if key[:2] == "01":
+                    sell_fish = ("%s :%s    Sale price:%s" % (self.allitems[key].description, self.inv[key], self.allitems[key].h0))#replace h0 with 'price' header
+                    print(sell_fish)
+            print("\n"+self.allitems['00001'].description+":"+ str(self.inv['00001'])+"\n")
+            sale = input("Type in the EXACT name of the item you wish to sell. Or press x to return.")
+            for key in self.inv:
+                if self.allitems[key].description == sale:
+                    while True:
+                        try:                    
+                            sale_q = int(input("How many [%s] would like you to sell? Maximum number to sell: %s \n" % (self.allitems[key].description, self.inv[key])))
+                            if sale_q > self.inv[key] or 0 > sale_q:
+                                self.error_message()
+                            else:
+                                self.inv[key] -= sale_q
+                                self.inv['00001'] += sale_q*int(self.allitems[key].h0)
+                                print("You now have %s %s." % (self.inv[key],self.allitems[key].description))
+                                print("You now have %s %s." % (self.inv['00001'],self.allitems['00001'].description))
+                                self.save()
+                                break
+                        except ValueError:
+                            self.error_message()
+                if sale == 'x':
+                    break
+                    break
+                    break
+    # def shop_sell(self):
     def help_display(self):
         print("\nHELP\n"
             "\n----------------------------\n"
@@ -169,7 +209,7 @@ class User_g(object):
             else:
                 self.error_message()
     def error_message(self):
-        print ("Try again.")
+        print ("That is invalid. Try again.")
     def inv_display(self): 
         print("YOUR INVENTORY:\n-------------------------")
         for key in self.inv:

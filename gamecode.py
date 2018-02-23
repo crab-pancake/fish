@@ -66,7 +66,17 @@ class Material(Item):
     def __repr__(self):
         return "Material(self, %r, %r, %r, %r, %r)" % (self.code, self.item_name, self.description, self.exp, self.min_level)
 
-global ListOfItems
+class Location(object):
+    """Fishing Locations class"""
+    def __init__(self, name, description, min_level):
+        self.name = name
+        self.description = description
+        self.min_level = min_level
+    def __str__(self):
+        return "Fishing location %s, minimum level %s" % (self.name, self.min_level)
+    def __repr__(self):
+        return "Location(self, %r, %r, %r, %r)" % (self.name, self.description, self.min_level)
+
 ListOfItems = {}
 print('listofitems has been made')
 with open('allitems.csv', 'r') as readfile:
@@ -94,14 +104,27 @@ class User_g(object):
         with open(self.uname+'_g_info.csv', 'r') as loadfile:
             loader = dict(csv.reader(loadfile))
             for key in loader:
-                self.inv[key] = loader[key]
+                self.inv[key] = int(loader[key])
     def save(self):   #done
         with open(self.uname+'_g_info.csv', 'w', newline='') as savefile:
             writer = csv.writer(savefile, dialect = 'excel')
             for key, value in self.inv.items():
-                writer.writerow([key, value])
+                # if value or key == ['00000']: # if value!=0
+                    writer.writerow([key, value])
     def fish_away(self):   #update so that catching nothing is determined first, then chance of each fish
-        with open('table.csv', 'r') as table: #table.csv will be changed to the player's specific level loottable
+        self.locations = []
+        # FishingSpot = input("Where do you want to fish?\n> ")
+        with open('droppers.csv', 'r') as file:
+            reader = csv.DictReader(file)
+            for row in reader: 
+                if int(player_s.exp) > int(row['min_level']):
+                    place = Location(row['name'], row['description'], row['min_level'])
+                    self.locations.append(place)
+        for place in self.locations:
+            print(place)
+
+        loottable = 'table' #loottable will be changed to the player's specific level loottable
+        with open(loottable+'.csv', 'r') as table:
             self.table = dict(csv.reader(table))
             while True:
                 fish = input("Would you like to fish? Press Y for yes, N for no.\n>> ").strip().lower()
@@ -115,12 +138,12 @@ class User_g(object):
                                 self.inv[key] =  int(self.inv[key]) +1
                                 print("You caught a [",self.allitems[key].item_name,'] .')
                                 print("You have",self.inv[key],self.allitems[key].item_name+'.')
-                                self.suc_fish(key)
+                                self.suc_fish(self.allitems[key].exp)
                                 catch = True
                                 break
                         if catch == False:
                             print("You didn't catch anything.")
-                            self.suc_fish('00000')
+                            self.suc_fish('0')
                     else:
                         print ("You have no units of fishing juice left. Try waiting at least another hour.")
                 elif fish == "n":
@@ -129,8 +152,7 @@ class User_g(object):
                     print ("Invalid response, try again.\n")
     def suc_fish(self, fish):
         print ("You have",self.inv['00000'],"fishing juice remaining.")
-        player_s.exp = int(player_s.exp)
-        player_s.exp += int(self.allitems[fish].exp)
+        player_s.exp = int(player_s.exp) + int(fish)
         self.save()
 
     def shop_display(self):
@@ -175,37 +197,45 @@ class User_g(object):
         for key in self.inv:
             print('%s: %s' % (self.allitems[key].item_name, self.inv[key]))
 
-global player_s
-player_s = User_s(playerfile["Create Time"], playerfile["Last Login"], playerfile["Password"], uname, playerfile["exp"])
+def rungame(uname):
+    with open(uname+'_i.csv', 'r') as file:
+        global player_s
+        playerfile = dict(csv.reader(file))
+        player_s = User_s(playerfile["Create Time"], playerfile["Last Login"], playerfile["Password"], uname, playerfile["exp"])
 
-if player_s.p_time_raw == '0': #If this is the first access of the game, then ptimeraw == 0
-    print('running first mode') #for debug purposes
-    player_s.update_time()
-    player_s.save()
-    player_g = User_g(uname)
-    player_g.inv['00000'] = 10  #when a new account is created, 10 fishing juice is given
-    print ("Welcome to the game! This is your first login. \n"
-           "Account creation time: %s"%(player_s.f_time))
-    player_g.display_menu()
-    player_s.save()
+        if player_s.p_time_raw == '0': #If this is the first access of the game, then ptimeraw == 0
+            print('running first mode') #for debug purposes
+            player_s.update_time()
+            player_s.save()
+            player_g = User_g(uname)
+            player_g.inv['00000'] = 10  #when a new account is created, 10 fishing juice is given
+            print ("Welcome to the game! This is your first login. \n"
+                   "Account creation time: %s"%(player_s.f_time))
+            player_g.display_menu()
+            player_s.save()
 
-elif player_s.delta > 0: 
-    print('running second mode') #for debug purposes
-    player_g = User_g(uname)
-    player_s.update_time()
-    player_s.save()
-    player_g.load()
-    player_g.inv['00000']=int(player_g.inv['00000'])+int(player_s.hsll)
-    print ("___________________\n"
-           "Welcome back to the game!\n"
-           "Account creation time: %s\n"
-           "Time since last login: %s hrs, %s mins\n\n"
-           "You've acquired [ %s ] unit(s) of fishing juice since the last login. \n"   
-           "HINT: you get 1 unit of juice per hour elapsed between the current and last logins.\n" 
-           %(player_s.f_time, int(player_s.hsll), int((player_s.hsll-int(player_s.hsll))*60), int(player_s.hsll)))
-    player_g.display_menu()
-    player_s.save()
+        elif player_s.delta > 0: 
+            print('running second mode') #for debug purposes
+            player_g = User_g(uname)
+            player_s.update_time()
+            player_s.save()
+            player_g.load()
+            player_g.inv['00000']=int(player_g.inv['00000'])+int(player_s.hsll)
+            print ("___________________\n"
+                   "Welcome back to the game!\n"
+                   "Account creation time: %s\n"
+                   "Time since last login: %s hrs, %s mins\n\n"
+                   "You've acquired [ %s ] unit(s) of fishing juice since the last login. \n"   
+                   "HINT: you get 1 unit of juice per hour elapsed between the current and last logins.\n" 
+                   %(player_s.f_time, int(player_s.hsll), int((player_s.hsll-int(player_s.hsll))*60), int(player_s.hsll)))
+            player_g.display_menu()
+            player_s.save()
 
-elif (player_s.delta < 0):
-    print("Error happened.")
-    player_s.close()
+        elif (player_s.delta < 0):
+            print("Error happened.")
+            player_s.close()
+
+if __name__ == "__main__":
+    pass
+
+print("Thanks for playing! Come back soon.")

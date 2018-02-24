@@ -47,7 +47,6 @@ def new_acct():
 
 def log_in():
   uname = input("Enter your account name to login.\n>> ").strip()
-  global playername
   print ('Logging in to account %s...' % (uname))
   acc_path = Path("./%s_i.csv" % (uname))  #put this into lower line?
   if acc_path.is_file():
@@ -57,14 +56,13 @@ def log_in():
       if pw == playerfile['Password']:
         print ('Successfully logged in to account %s.' % (uname))
         print('done')
-        exec(open('./gamecode.py').read())
+        import gamecode
+        gamecode.rungame(uname)
       else:
         print ('Sorry, the username and password didn\'t match.')
         acct_ask()
   else:
     print ('Account by the name of %s doesn\'t exist.' % (uname))
     acct_ask()
-
-
 
 acct_ask()

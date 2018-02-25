@@ -1,0 +1,10 @@
+.csv files will have suffixes in order to denote their purpose. 
+
+g: player game info file
+i: player account info file
+
+t: loot table
+l: location
+s: shop
+something else for other types of interactables?
+m: misc. file

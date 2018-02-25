@@ -1,0 +1,3 @@
+code,name,desc,type,introline,exitline
+00001,shoppo,A shop.,shop,hello!,bye!
+00002,bakery,A bread shop.,shop,hi!,cya!

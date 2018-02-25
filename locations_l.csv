@@ -1,0 +1,4 @@
+code,name,desc,content,travel
+000,Town,A medium-sized town.,,001;002
+001,Village,A small village.,,000;002;004;005
+002,City,A large city.,,000

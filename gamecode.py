@@ -2,7 +2,6 @@ import random
 import time
 import csv
 
-print('gamecode has started')
 class User_s(object):
     """user stats file for times and such."""
     def __init__(self, f_time_raw, p_time_raw, pw, uname, exp):
@@ -83,8 +82,7 @@ class Location(object):
         return "Location(self, %r, %r, %r, %r)" % (self.name, self.description, self.min_level)
 
 ListOfItems = {}
-print('listofitems has been made')
-with open('allitems.csv', 'r') as readfile:
+with open('allitems_m.csv', 'r') as readfile:
     reader = csv.DictReader(readfile)
     for row in reader:
         if row['i_type'] == 'fish':
@@ -103,15 +101,14 @@ class User_g(object):
         self.uname = uname
         self.inv = {}
         self.allitems = ListOfItems
-        for key in self.allitems:
-            self.inv[key] = 0      #creates a dictionary called inv and creates keys for all the entries from allitems, sets all quantities to 0
+        self.inv = dict.fromkeys(self.allitems, 0)    #creates a dict called inv and all keys from allitems, sets values to 0
     def load(self):   #done
-        with open(self.uname+'_g_info.csv', 'r') as loadfile:
+        with open(self.uname+'_g.csv', 'r') as loadfile:
             loader = dict(csv.reader(loadfile))
             for key in loader:
                 self.inv[key] = int(loader[key])
     def save(self):   #done
-        with open(self.uname+'_g_info.csv', 'w', newline='') as savefile:
+        with open(self.uname+'_g.csv', 'w', newline='') as savefile:
             writer = csv.writer(savefile, dialect = 'excel')
             for key, value in self.inv.items():
                 # if value or key == ['00000']: # if value!=0
@@ -119,17 +116,17 @@ class User_g(object):
     def fish_away(self):   #update so that catching nothing is determined first, then chance of each fish
         self.locations = []
         # FishingSpot = input("Where do you want to fish?\n> ")
-        with open('droppers.csv', 'r') as file:
+        with open('droppers_l.csv', 'r') as file:
             reader = csv.DictReader(file)
             for row in reader: 
                 if int(player_s.exp) > int(row['min_level']):
                     place = Location(row['name'], row['description'], row['min_level'])
                     self.locations.append(place)
-        for place in self.locations:
-            print(place)
+        for number, place in enumerate(self.locations, 1):
+            print('%s. %s' %(number, place))
 
         loottable = 'table' #loottable will be changed to the player's specific level loottable
-        with open(loottable+'.csv', 'r') as table:
+        with open(loottable+'_t.csv', 'r') as table:
             self.table = dict(csv.reader(table))
             while True:
                 fish = input("Would you like to fish? Press Y for yes, N for no.\n>> ").strip().lower()
@@ -166,16 +163,18 @@ class User_g(object):
             shop = input("\nWelcome to the General Store. Here you can sell your hard earned fish and purchase new equipment to upgrade your fishing capabilities. \nPress 's' to sell items and 'b' to purchase items.")
             if shop == 's':
                 self.shop_sell(shop_s_type)
-            if shop == 'b':
+            elif shop == 'b':
                 self.shop_buy(shop_b_type)
+            else:
+                break
     def shop_buy(self, shop_b_type):#shop_b_type - this refers to the CSV file of the purchasing shop. This CSV should have a dictionary of items codes (e.g. 02001) as keys, as well as blank filler values
-        with open(shop_b_type+'.csv', 'r') as shop:
+        with open(shop_b_type+'_s.csv', 'r') as shop:
             self.shop = dict(csv.reader(shop))
             print("\nAlright, here's what's available for purchase.\n")
             for key in self.shop:
                 print("%s - Cost: %s" % (self.allitems[key].description, self.allitems[key].buy_p))
             self.disp_gold()
-            purchase = input("\nType in the EXACT name of the item you wish to purchase. Or press x to return.\n")
+            purchase = input("\nType in the EXACT name of the item you wish to purchase. Or press x to return.\n").lower()
             for key in self.inv:
                 if self.allitems[key].description == purchase:
                         while True:
@@ -200,9 +199,11 @@ class User_g(object):
                     sell_fish = ("%s :%s    Sale price:%s" % (self.allitems[key].description, self.inv[key], self.allitems[key].sale_p))
                     print(sell_fish)
             self.disp_gold()
-            sale = input("Type in the EXACT name of the item you wish to sell. Or press x to return.")
+            sale = input("Type in the EXACT name of the item you wish to sell. Or press x to return.").lower()
+            if sale == 'x':
+                break
             for key in self.inv:
-                if self.allitems[key].description == sale:
+                if self.allitems[key].description.lower() == sale:
                     while True:
                         try:                    
                             sale_q = int(input("How many [%s] would like you to sell? Maximum number to sell: [%s] Sale price: [%s]\n" % (self.allitems[key].description, self.inv[key], self.allitems[key].sale_p)))
@@ -217,8 +218,7 @@ class User_g(object):
                                 break
                         except ValueError:
                             self.error_message()
-                if sale == 'x':
-                    break
+
     def help_display(self):
         print("\nHELP\n"
             "\n----------------------------\n"
@@ -298,6 +298,9 @@ def rungame(uname):
             player_s.close()
 
 if __name__ == "__main__":
-    pass
+    with open('test_acct_i.csv', 'w', newline = '') as playerfile:
+        writer = csv.writer(playerfile, dialect='excel')
+        writer.writerows([['Create Time', time.time()], ['Last Login',0], ['exp',0], ['Password','']])
+    rungame('test_acct')
 
 print("Thanks for playing! Come back soon.")

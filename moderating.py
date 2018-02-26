@@ -46,4 +46,4 @@ def convert(username):
 
 if __name__ == "__main__":
     while True:
-        exec(raw_input(">>> "))
+        exec(input(">>> "))

@@ -52,14 +52,15 @@ class Material(Item):
 
 class Location(object):
     """Fishing Locations class"""
-    def __init__(self, name, description, min_level):
+    def __init__(self, code, name, description, min_level):
+        self.code = code
         self.name = name
         self.description = description
         self.min_level = min_level
     def __str__(self):
         return "Fishing location %s, minimum level %s" % (self.name, self.min_level)
     def __repr__(self):
-        return "Location(self, %r, %r, %r, %r)" % (self.name, self.description, self.min_level)
+        return "Location(self, %r, %r, %r, %r, %r)" % (self.code, self.name, self.description, self.min_level)
 ListOfItems = {}
 with open('allitems_m.csv', 'r') as readfile:
     reader = csv.DictReader(readfile)
@@ -128,18 +129,26 @@ class Player(object):
         self.save()
     def fish_away(self):   #update so that catching nothing is determined first, then chance of each fish
         self.locations = []
-        # FishingSpot = input("Where do you want to fish?\n> ")
         with open('droppers_l.csv', 'r') as file:
             reader = csv.DictReader(file)
             for row in reader: 
-                if self.exp['fishing'] > int(row['min_level']):
-                    place = Location(row['name'], row['description'], row['min_level'])
+                if self.exp['fishing'] >= int(row['min_level']):
+                    place = Location(row['code'], row['name'], row['description'], row['min_level'])
                     self.locations.append(place)
         for number, place in enumerate(self.locations, 1):
-            print('%s. %s' %(number, place))
 
-        loottable = 'table' #loottable will be changed to the player's specific level loottable
-        with open(loottable+'_t.csv', 'r') as table:
+            print('%s. %s' %(number, place))
+        while True: # change to try: int(input)
+            FishingSpot = input("Where do you want to fish? Type a number from 1 to %s \n> " % (len(self.locations)))
+            try:
+                if 0<=int(FishingSpot)<=len(self.locations):
+                    break
+                else:
+                    self.error_message(0)
+            except ValueError:
+                self.error_message(0)
+
+        with open(self.locations[int(FishingSpot)-1].code+'_t.csv', 'r') as table:
             self.table = dict(csv.reader(table))
             while True:
                 fish = input("Would you like to fish? Press Y for yes, N for no.\n>> ").strip().lower()
@@ -270,7 +279,7 @@ def rungame(uname):
             player.updatetime()
             player.inventory = dict.fromkeys(ListOfItems, 0)
             player.save()
-            player.inventory['00000'] = 10  #when a new account is created, 10 fishing juice is given
+            player.inventory['00000'] = 10  #when account is created, 10 fishing juice is given
             print ("Welcome to the game, %s! This is your first login. \n"
                    "Account creation time: %s"% (player.username, time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(player.createtime))))
             player.display_menu()
@@ -296,7 +305,7 @@ def rungame(uname):
 if __name__ == "__main__":
     with open('test_acct_p.json', 'w', ) as file:
         stats = {"username": "test_acct", "password": "","createtime": time.time(),"lastlogin": 0,
-            "exp": {"fishing": 0},"inventory": {"00000": 10},"position": "here"}
+            "exp": {"fishing": 0},"inventory": {"00000": 0},"position": "here"}
         json.dump(stats, file)
     rungame('test_acct')
 

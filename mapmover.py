@@ -7,7 +7,7 @@ class Location(object):
         self.name = name
         self.description = description
         self.content = {}
-        with open('/locations/'+self.code+'_l.csv', 'r') as file:
+        with open('./locations/'+self.code+'_l.csv', 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
                 self.content[row['code']] = Shop(row['code'],row['name'],row['desc'],row['introline'],row['exitline'])
@@ -59,18 +59,16 @@ class Shop(Place):
 
 class FishingSpot(Place):
     """Class for fishing spots."""
-    def __init__(self, code, name, description, min_level, weather):
+    def __init__(self, code, name, description, min_level):
         super().__init__(code, name, description)
         self.min_level = min_level
-        self.loottable = code+'_t.csv'
-        self.weather = weather
+        self.loottable = './tables/'+code+'_t.csv'
+        # self.weather = weather  # add this later
     def StartFishing(self):
         with open(self.loottable, 'r') as file:
             reader = dict(csv.reader(file))
 
 if __name__ == "__main__":
-    # shoppe = Shop(1,'Hello there!','Goodbye!')
-    # shoppe.shopfront()
     places = {}
     with open('locations_l.csv', 'r') as file:
         reader = csv.DictReader(file)
@@ -80,7 +78,7 @@ if __name__ == "__main__":
     places['000'].travel()
     print(places['001'].content['l0011'].name)
     print(places['002'].description)
-    print(places['002'].content['l0022'].description)
+    print(places['002'].travel())
     # places['000'].content['l0001'].shopfront()
 
 # chicken = "print('hello chicken')"

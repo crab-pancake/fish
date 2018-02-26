@@ -19,7 +19,7 @@ def acct_ask(): #This is complete
 def new_acct():
     uname = input("Select new username:\n>> ").strip()
     try:
-        with open(uname+'_p.json', 'x') as playerfile:
+        with open('./PlayerAccts/'+uname+'_p.json', 'x') as playerfile:
             print ('Creating account with username %s...' % (uname))
             skills = ['fishing']
             exp = {}
@@ -51,9 +51,9 @@ def new_acct():
 def log_in():
     uname = input("Enter your account name to login.\n>> ").strip()
     print ('Logging in to account %s...' % (uname))
-    acc_path = Path("./%s_p.json" % (uname))  #put this into lower line?
+    acc_path = Path("./PlayerAccts/%s_p.json" % (uname))  #put this into lower line?
     if acc_path.is_file():
-        with open(uname+'_p.json', 'r') as file:
+        with open('./PlayerAccts/'+uname+'_p.json', 'r') as file:
             reader = json.load(file)
             pw = input("Please type your password.\n>> ")
             if pw == reader['password']:

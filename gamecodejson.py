@@ -61,6 +61,7 @@ class Location(object):
         return "Fishing location %s, minimum level %s" % (self.name, self.min_level)
     def __repr__(self):
         return "Location(self, %r, %r, %r, %r, %r)" % (self.code, self.name, self.description, self.min_level)
+
 ListOfItems = {}
 with open('allitems_m.csv', 'r') as readfile:
     reader = csv.DictReader(readfile)
@@ -91,13 +92,13 @@ class Player(object):
         stats = {
         "username": self.username, 
         "password": self.password, 
-        "create time": self.createtime, 
-        "last login": self.lastlogin,
+        "createtime": self.createtime, 
+        "lastlogin": self.lastlogin,
         "exp": self.exp,
         "inventory": self.inventory,
         "position": self.position
         }
-        with open(self.username+'_p.json', 'w') as file:
+        with open('./PlayerAccts/'+self.username+'_p.json', 'w') as file:
             json.dump(stats, file)
     def display_menu(self):
         while True:
@@ -113,7 +114,7 @@ class Player(object):
             elif menu =="2":
                 self.fish_away()
             elif menu == "3":
-                self.shop_display("shop_basic","01")
+                self.shop_display("shop_basic","i01")
             elif menu == "4":
                 self.help_display()
             elif menu == "5":
@@ -124,7 +125,7 @@ class Player(object):
             else:
                 self.error_message(0)
     def suc_fish(self, fish_exp):
-        print ("You have",self.inventory['00000'],"fishing juice remaining.")
+        print ("You have",self.inventory['i00000'],"fishing juice remaining.")
         self.exp['fishing'] += fish_exp
         self.save()
     def fish_away(self):   #update so that catching nothing is determined first, then chance of each fish
@@ -136,25 +137,23 @@ class Player(object):
                     place = Location(row['code'], row['name'], row['description'], row['min_level'])
                     self.locations.append(place)
         for number, place in enumerate(self.locations, 1):
-
             print('%s. %s' %(number, place))
-        while True: # change to try: int(input)
-            FishingSpot = input("Where do you want to fish? Type a number from 1 to %s \n> " % (len(self.locations)))
+        while True:
             try:
-                if 0<=int(FishingSpot)<=len(self.locations):
+                FishingSpot = int(input("Where do you want to fish? Type a number from 1 to %s \n> " % (len(self.locations))))
+                if 0<FishingSpot<=len(self.locations):
                     break
                 else:
                     self.error_message(0)
             except ValueError:
                 self.error_message(0)
-
-        with open(self.locations[int(FishingSpot)-1].code+'_t.csv', 'r') as table:
+        with open('./tables/'+self.locations[FishingSpot-1].code+'_t.csv', 'r') as table:
             self.table = dict(csv.reader(table))
             while True:
                 fish = input("Would you like to fish? Press Y for yes, N for no.\n>> ").strip().lower()
                 if fish == "y":
-                    if self.inventory['00000'] >0:
-                        self.inventory['00000'] -= 1
+                    if self.inventory['i00000'] >0:
+                        self.inventory['i00000'] -= 1
                         rng = random.randint(1,100)
                         catch = False
                         for key in self.table:
@@ -178,8 +177,10 @@ class Player(object):
         print("You now have %s %s." % (self.inventory[currency],ListOfItems[currency].description))
     def shop_display(self,shop_b_type,shop_s_type):
         while True:
-            shop = input("\nWelcome to the General Store. Here you can sell your hard earned fish and purchase new equipment to upgrade your fishing capabilities. \n"
-                         "Press 's' to sell items and 'b' to purchase items.\n>> ")
+            shop = input("""Welcome to the General Store.
+                         Here you can sell your hard earned fish and purchase new equipment to upgrade your fishing capabilities.
+                         Press 's' to sell items and 'b' to purchase items.
+                         >> """).strip().lower()
             if shop == 's':
                 self.shop_sell(shop_s_type)
             elif shop == 'b':
@@ -194,7 +195,7 @@ class Player(object):
             print("\nAlright, here's what's available for purchase.\n")
             for key in self.shop:
                 print("%s - Cost: %s" % (ListOfItems[key].description, ListOfItems[key].buy_p))
-            self.disp_currency('00001')
+            self.disp_currency('i00001')
             while True: 
                 purchase = input("\nType in the EXACT name of the item you wish to purchase. Or press x to return.\n>> ").lower()
                 if purchase == 'x':
@@ -210,13 +211,13 @@ class Player(object):
                                 break
                             try:
                                 quantity = int(purchase_q)
-                                if 0 < int(self.inventory['00001']) < quantity*int(buyitem.buy_p):
+                                if 0 < int(self.inventory['i00001']) < quantity*int(buyitem.buy_p):
                                     self.error_message(0)
                                 else:
                                     self.inventory[key] += quantity
-                                    self.inventory['00001'] -= quantity*int(buyitem.buy_p)
+                                    self.inventory['i00001'] -= quantity*int(buyitem.buy_p)
                                     print("You now have %s %s." % (self.inventory[key],buyitem.description))
-                                    self.disp_currency('00001')
+                                    self.disp_currency('i00001')
                                     self.save()
                                     break
                             except ValueError:
@@ -228,10 +229,10 @@ class Player(object):
         while True:
             print("\nYou have the following fish available for sale:\n")
             for key in self.inventory:
-                if key[:2] == shop_s_code:
+                if key[:3] == shop_s_code:
                     sell_fish = ("%s :%s    Sale price:%s" % (ListOfItems[key].description, self.inventory[key], ListOfItems[key].sale_p))
                     print(sell_fish)
-            self.disp_currency('00001')
+            self.disp_currency('i00001')
 
             sale = input("Type in the EXACT name of the item you wish to sell. Or type x to return.\n>> ").lower()
             if sale == 'x':
@@ -245,9 +246,9 @@ class Player(object):
                                 self.error_message(0)
                             else:
                                 self.inventory[key] -= sale_q
-                                self.inventory['00001'] += sale_q*int(ListOfItems[key].sale_p)
+                                self.inventory['i00001'] += sale_q*int(ListOfItems[key].sale_p)
                                 print("You now have %s %s." % (self.inventory[key],ListOfItems[key].description))
-                                self.disp_currency('00001')
+                                self.disp_currency('i00001')
                                 self.save()
                                 break
                         except ValueError:
@@ -270,7 +271,7 @@ class Player(object):
             print('%s: %s' % (ListOfItems[key].description, self.inventory[key]))
 
 def rungame(uname):
-    with open(uname+'_p.json', 'r') as file:
+    with open('./PlayerAccts/'+uname+'_p.json', 'r') as file:
         reader = json.load(file)# This returns a dictionary with all the information in it. 
         player = Player(reader['username'], reader['password'], reader['createtime'], reader['lastlogin'], reader['exp'], reader['inventory'], reader['position'])
 
@@ -279,7 +280,7 @@ def rungame(uname):
             player.updatetime()
             player.inventory = dict.fromkeys(ListOfItems, 0)
             player.save()
-            player.inventory['00000'] = 10  #when account is created, 10 fishing juice is given
+            player.inventory['i00000'] = 10  #when account is created, 10 fishing juice is given
             print ("Welcome to the game, %s! This is your first login. \n"
                    "Account creation time: %s"% (player.username, time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(player.createtime))))
             player.display_menu()
@@ -288,7 +289,7 @@ def rungame(uname):
         elif player.lastlogin - player.createtime > 0: 
             print('running second mode') #for debug purposes
             player.updatetime()
-            player.inventory['00000'] += int(player.hsll)
+            player.inventory['i00000'] += int(player.hsll)
             player.save()
             print ("___________________\n"
                    "Welcome back to the game, %s!\n"
@@ -303,9 +304,9 @@ def rungame(uname):
             print("Error happened.")
 
 if __name__ == "__main__":
-    with open('test_acct_p.json', 'w', ) as file:
+    with open('./PlayerAccts/test_acct_p.json', 'w', ) as file:
         stats = {"username": "test_acct", "password": "","createtime": time.time(),"lastlogin": 0,
-            "exp": {"fishing": 0},"inventory": {"00000": 0},"position": "here"}
+            "exp": {"fishing": 0},"inventory": {"i00000": 0},"position": "here"}
         json.dump(stats, file)
     rungame('test_acct')
 

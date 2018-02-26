@@ -38,13 +38,12 @@ def convert(username):
     with open(username+"_g.csv", 'r') as file:
         reader = dict(csv.reader(file))
         for row in reader:
-            inventory[row] = int(reader[row])
+            inventory['i'+row] = int(reader[row])
     stats['inventory'] = inventory
 
     with open(username+'_p.json', 'w') as file:
         json.dump(stats, file)
 
 if __name__ == "__main__":
-    uname = input('type account name to convert & prettyprint\n>> ')
-    convert(uname)
-    prettyprint(uname)
+    while True:
+        exec(raw_input(">>> "))

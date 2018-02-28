@@ -61,5 +61,16 @@ with open('allitems_m.csv', 'r') as readfile:
             ThisItem = Item(row['code'], row['item_name'], row['description'], int(row['exp']), int(row['min_level']), int(row['sale_p']), int(row['buy_p']), row['h2'], row['h3'], row['i_type'])
         ListOfItems[ThisItem.code] = ThisItem
 
-def error_message(number):
+def error(number):
     print ("Error %s: That is invalid. Try again." % (number)) 
+
+def IntChoice(maxvalue):
+    while True:
+        try: 
+            choice = int(input(">> "))-1
+            if 0<=choice<maxvalue:
+                return choice
+            else:
+                error(0)
+        except ValueError:
+            error(0)

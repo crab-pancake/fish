@@ -1,5 +1,6 @@
 import csv
 import json
+import universals as univ
 
 class Location(object):
     def __init__(self, code, name, description, travel):
@@ -10,12 +11,19 @@ class Location(object):
         with open('./locations/'+self.code+'_l.csv', 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                self.content[row['code']] = Shop(row['code'],row['name'],row['desc'],row['introline'],row['exitline'])
+                if row['type'] == 'shop':
+                    self.content[row['code']] = Shop(row['code'],row['name'],row['desc'],row['introline'],row['exitline'])
+                elif row['type'] == 'FishSpot':
+                    self.content[row['code']] = FishSpot(row['code'],row['name'],row['desc'],row['min_level'])
         self.destinations = travel.split(';')
-    def travel(self):
-        return self.destinations
-        for number, value in enumerate(self.destinations, 1):
-            print(number, places[value].name)
+    def displaycontent(self):
+        for num, place in enumerate(self.content):
+            print(num+1, self.content[place].name)
+        while True:
+
+            decision = int(input("Where do you want to go?"))
+
+        
 
 class Place(object):
     def __init__(self, code, name, description):
@@ -47,17 +55,15 @@ class Shop(Place):
                     print(self.exit)
                     break
                 else:
-                    print(self.error(0))
+                    print(univ.error(0))
             except ValueError:
-                print(self.error(1))
+                print(univ.error(1))
     def sell(self):
-        print("sell items here")
+        player.disp_currency('00001')
     def buy(self):
-        print("buy items here")
-    def error(self, number):
-        return "Error %i. Please try again." % (number)
+        player.disp_currency('00001')
 
-class FishingSpot(Place):
+class FishSpot(Place):
     """Class for fishing spots."""
     def __init__(self, code, name, description, min_level):
         super().__init__(code, name, description)
@@ -69,17 +75,44 @@ class FishingSpot(Place):
             reader = dict(csv.reader(file))
 
 if __name__ == "__main__":
+
     places = {}
+    
     with open('locations_l.csv', 'r') as file:
         reader = csv.DictReader(file)
         for row in reader:
             place = Location(row['code'], row['name'], row['description'], row['travel'])
             places[row['code']] = place
-    places['000'].travel()
-    print(places['001'].content['l0011'].name)
-    print(places['002'].description)
-    print(places['002'].travel())
-    # places['000'].content['l0001'].shopfront()
+
+    class Player(object):
+        def __init__(self):
+            self.inventory = {'i00000': 10, 'i00001': 20, 'i01001': 5, 'i01003': 13, 'i01006': 3, 'i02002': 5}
+            self.position = "000"
+        def disp_currency(self, currency):
+            print("You now have %s %s." % (self.inventory[currency],univ.ListOfItems[currency].description))
+        def travel(self):
+            self.traveller = []
+            for number, value in enumerate(places[self.position].destinations):
+                self.traveller.append(value)
+                print(str(number + 1)+'.', places[value].name)
+            while True:
+                try:
+                    self.destination = int(input('Type the number of the destination you want to travel to.\n>> '))-1
+                    if 0<=self.destination<len(self.traveller):
+                        self.position = places[self.position].destinations[self.destination]
+                        print('You have moved to %s.'%(places[self.position].name))
+                        print(places[self.position].description)
+                        # print(places[self.position].content)
+                        places[self.position].displaycontent()
+                        break
+                    else:
+                        print('out of range')
+                except ValueError:
+                    print('nope')
+
+    player = Player()
+    player.travel()
+    player.travel()
 
 # chicken = "print('hello chicken')"
 # exec(chicken) #nice, this works

@@ -111,7 +111,7 @@ class Player(object):
                 print ("Complete.")
                 break
             else:
-                self.error_message(0)
+                univ.error_message(0)
     def suc_fish(self, fish_exp):
         print ("You have",self.inventory['i00000'],"fishing juice remaining.")
         self.exp['fishing'] += fish_exp
@@ -132,9 +132,9 @@ class Player(object):
                 if 0<FishingSpot<=len(self.locations):
                     break
                 else:
-                    self.error_message(0)
+                    univ.error_message(0)
             except ValueError:
-                self.error_message(0)
+                univ.error_message(0)
         with open('./tables/'+self.locations[FishingSpot-1].code+'_t.csv', 'r') as table:
             self.table = dict(csv.reader(table))
             while True:
@@ -176,7 +176,7 @@ Press 's' to sell items and 'b' to purchase items. Or press 'x' to leave.
             elif shop == 'x':
                 break
             else:
-                self.error_message(0)
+                univ.error_message(0)
     def shop_buy(self, shop_b_type):#shop_b_type refers to the CSV file of the purchasing shop. This CSV should have a dictionary of items codes (e.g. 02001) as keys, as well as blank filler values
         with open(shop_b_type+'_s.csv', 'r') as shop:
             self.shop = dict(csv.reader(shop))
@@ -200,7 +200,7 @@ Press 's' to sell items and 'b' to purchase items. Or press 'x' to leave.
                             try:
                                 quantity = int(purchase_q)
                                 if 0 < int(self.inventory['i00001']) < quantity*univ.ListOfItems[key].buy_p:
-                                    self.error_message(0)
+                                    univ.error_message(0)
                                 else:
                                     self.inventory[key] += quantity
                                     self.inventory['i00001'] -= quantity*univ.ListOfItems[key].buy_p
@@ -209,9 +209,9 @@ Press 's' to sell items and 'b' to purchase items. Or press 'x' to leave.
                                     self.save()
                                     break
                             except ValueError:
-                                self.error_message(0)
+                                univ.error_message(0)
                 if itemfound == False:
-                    self.error_message(0)
+                    univ.error_message(0)
                 
     def shop_sell(self,shop_s_code):#shop_s_code - this can be used to define a type of shop. e.g. '01' - corresponds to a fishing shop, where you can sell all your fish.
         while True:
@@ -232,7 +232,7 @@ Press 's' to sell items and 'b' to purchase items. Or press 'x' to leave.
                             sale_q = int(input("How many [%s] would like you to sell? Maximum number to sell: [%s] Sale price: [%s]\n>> " 
                                 % (univ.ListOfItems[key].description, self.inventory[key], univ.ListOfItems[key].sale_p)))
                             if sale_q > self.inventory[key] or 0 > sale_q:
-                                self.error_message(0)
+                                univ.error_message(0)
                             else:
                                 self.inventory[key] -= sale_q
                                 self.inventory['i00001'] += sale_q*univ.ListOfItems[key].sale_p
@@ -241,7 +241,7 @@ Press 's' to sell items and 'b' to purchase items. Or press 'x' to leave.
                                 self.save()
                                 break
                         except ValueError:
-                            self.error_message(0)
+                            univ.error_message(0)
 
     def help_display(self):
         print("""HELP

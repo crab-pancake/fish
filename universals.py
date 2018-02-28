@@ -60,3 +60,6 @@ with open('allitems_m.csv', 'r') as readfile:
         else:
             ThisItem = Item(row['code'], row['item_name'], row['description'], int(row['exp']), int(row['min_level']), int(row['sale_p']), int(row['buy_p']), row['h2'], row['h3'], row['i_type'])
         ListOfItems[ThisItem.code] = ThisItem
+
+def error_message(number):
+    print ("Error %s: That is invalid. Try again." % (number)) 

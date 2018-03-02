@@ -66,11 +66,16 @@ def error(number):
 
 def IntChoice(maxvalue):
     while True:
-        try: 
-            choice = int(input(">> "))-1
-            if 0<=choice<maxvalue:
-                return choice
-            else:
+        choice = input(">> ")
+        if choice =='x':
+            break
+        else:
+            try:
+                if choice == 0:
+                    return 0
+                elif 0<=int(choice)<maxvalue:
+                    return int(choice)
+                else:
+                    error(0)
+            except ValueError:
                 error(0)
-        except ValueError:
-            error(0)

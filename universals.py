@@ -1,4 +1,6 @@
 import csv
+import time
+import json
 
 class Item(object):
     """items"""
@@ -61,21 +63,70 @@ with open('allitems_m.csv', 'r') as readfile:
             ThisItem = Item(row['code'], row['item_name'], row['description'], int(row['exp']), int(row['min_level']), int(row['sale_p']), int(row['buy_p']), row['h2'], row['h3'], row['i_type'])
         ListOfItems[ThisItem.code] = ThisItem
 
+class Player(object):
+    def __init__(self, username, password, createtime, lastlogin, exp, inventory, position):
+        self.username = username
+        self.password = password
+        self.createtime = createtime
+        self.lastlogin = lastlogin
+        self.exp = exp
+        self.inventory = inventory
+        self.position = position
+        self.hsll = (time.time() - float(lastlogin))/3600
+    def updatetime(self):
+        self.lastlogin = time.time()
+    def save(self):
+        stats = {
+        "username": self.username,
+        "password": self.password,
+        "createtime": self.createtime,
+        "lastlogin": self.lastlogin,
+        "exp": self.exp,
+        "inventory": self.inventory,
+        "position": self.position
+        }
+        with open('./PlayerAccts/'+self.username+'_p.json', 'w') as file:
+            json.dump(stats, file)
+    def display_menu(self):
+        while True:
+            menu = input("\nMENU\n"
+                    "----------------------------\n"
+                    "1. Display inventory\n"
+                    "4. Help\n"
+                    "5. Exit game\n> ")
+            if menu =="1":
+                self.inv_display()
+            elif menu == "4":
+                self.help_display()
+            elif menu == "5":
+                print ("Saving and exiting game.")
+                self.save()
+                print ("Complete.")
+                break
+            else: error(0)
+    def disp_currency(self, currency):
+        print("You now have %s %s." % (self.inventory[currency],univ.ListOfItems[currency].description))
+    def help_display(self):
+        print("HELP\n")
+    def inv_display(self): 
+        print("YOUR INVENTORY:\n-------------------------")
+        for key in self.inventory:
+            print('%s: %s' % (univ.ListOfItems[key].description, self.inventory[key]))
+
 def error(number):
     print ("Error %s: That is invalid. Try again." % (number)) 
 
-def IntChoice(maxvalue):
+def IntChoice(maxvalue,globalexcept, localexcept):
     while True:
         choice = input(">> ")
-        if choice =='x':
-            break
-        else:
-            try:
-                if choice == 0:
-                    return 0
-                elif 0<=int(choice)<maxvalue:
-                    return int(choice)
-                else:
-                    error(0)
-            except ValueError:
+        try:
+            thing = int(choice)
+            if 0<thing<=maxvalue-len(localexcept) or thing in localexcept:
+                return thing
+            else:
                 error(0)
+        except ValueError:
+            if choice in globalexcept:
+                return choice
+            else:
+                error(2)

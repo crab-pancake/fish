@@ -1,10 +1,18 @@
-import json
+import json, time
 import universals as univ
 import gamemap as gmap
 
 def mover(account):
+    nextAction = gmap.displayPlaces
     while True:
-        account.position = gmap.Locations[account.position].displayplaces(account)
+        MyTuple = nextAction(account)
+        account = MyTuple[0]
+        nextAction = MyTuple[1]
+        account.save()
+        if nextAction == None:
+            break
+        else:
+            myTuple=nextAction
 
 def start_acct(uname):
     with open('./PlayerAccts/'+uname+'_p.json', 'r') as file:
@@ -40,11 +48,10 @@ def start_acct(uname):
             print("Error happened.")
 
 if __name__ == "__main__":
-    import time
-    with open('./PlayerAccts/test_acct_p.json', 'w') as file:
-        stats = {"username": "test_acct", "password": "","createtime": time.time(),"lastlogin": 0,
-            "exp": {"fishing": 0},"inventory": {},"position": "000"}
-        json.dump(stats, file)
+    # with open('./PlayerAccts/test_acct_p.json', 'w') as file:
+    #     stats = {"username": "test_acct", "password": "","createtime": time.time(),"lastlogin": 0,
+    #         "exp": {"fishing": 0},"inventory": {},"position": "000"}
+    #     json.dump(stats, file)
     start_acct('test_acct')
 else:
     print("imported from another module")

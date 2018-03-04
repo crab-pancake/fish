@@ -4,14 +4,63 @@ import universals as univ
 import random
 import ingameMenu
 
+def displayPlaces(player):
+    print("You are currently at %s." % (Locations[player.position].name))
+    while True:
+        print("Which place do you want to go into?")
+        for num, place in sorted(Locations[player.position].places.items())[1:]:
+            print(num, Locations[player.position].places[num][0])
+        print(0, Locations[player.position].places[0][0])
+        choice=univ.IntChoice(len(Locations[player.position].places),['x','m', 'q'],[0])
+        if choice == 'x' or choice == 0:
+            return (player, travel)
+        elif choice == 'q':
+            print("Quitting...")
+            return (player, quit)
+        elif choice == 'm':
+            action = ingameMenu.menu(player)
+            print(action)
+        else: 
+            return (player, Locations[player.position].places[choice][1].takeaction)
 
+def travel(player):
+    print("You are leaving %s."%(Locations[player.position].name))
+    traveller = {0:'Return'}
+    print('Type the number of the town you want to travel to.')
+    for location in sorted(Locations[player.position].destinations):
+        i=1
+        traveller[i] = Locations[location].name
+    for num, loc in sorted(traveller.items())[1:]:
+        print(num, traveller[num])
+    print(0,traveller[0])
+    while True:
+        choice=univ.IntChoice(len(traveller), ['x','m'], [0])
+        if choice == 0 or choice == 'x':
+            print('Returning to old place... ')
+            return (player, displayPlaces)
+        elif choice == 'm':
+            ingameMenu.menu(player)
+        else:
+            player.position = sorted(Locations[player.position].destinations)[choice-1]
+            print('You have moved to %s.'%(Locations[player.position].name))
+            print(Locations[player.position].description) # just testing
+            return (player, displayPlaces)
+
+def quit(player):
+    answer = input("Are you sure you want to quit? Type yes to confirm, or anything else to cancel.\n>> ").strip().lower()
+    if answer in['yes','ye','y']:
+        print("Thanks for playing, see you again soon.")
+        return (player, None)
+    else:
+        print("Cancelled, returning to game.")
+        return (player, displayPlaces)
 
 class Location(object):
     def __init__(self, code, name, description, travel):
         self.code = code
         self.name = name
         self.description = description
-        self.places = {0:('Leave', self.travel), 1:('Do a thing', 'funcname')}
+        self.places = {0:('Leave', travel)}
         with open('./locations/'+self.code+'_l.csv', 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
@@ -23,46 +72,6 @@ class Location(object):
                 i+=1
         self.destinations = travel.split(';')
 
-    def displayplaces(self, player):
-        self.player = player
-        print("You are currently at %s." % (self.name))
-        while True:
-            print("Which place do you want to go into?")
-            for num, place in sorted(self.places.items())[1:]:
-                print(num, self.places[num][0])
-            print(0, self.places[0][0])
-            choice=univ.IntChoice(len(self.places),['x','m'],[0])
-            if choice == 'x' or choice == 0:
-                return self.travel()
-            elif choice == 'm':
-                ingameMenu.menu(self.player)
-            else: 
-                print("test thing has been selected.")
-                self.places[choice][1].takeaction(player)
-
-    def travel(self):
-        print("You are leaving %s."%(self.name))
-        self.traveller = {0:'Return'}
-        print('Type the number of the town you want to travel to.')
-        for location in sorted(self.destinations):
-            i=1
-            self.traveller[i] = Locations[location].name
-        for num, loc in sorted(self.traveller.items())[1:]:
-            print(num, self.traveller[num])
-        print(0,self.traveller[0])
-        while True:
-            choice=univ.IntChoice(len(self.traveller), ['x','m'], [0])
-            if choice == 0 or choice == 'x':
-                print('Returning to old place... ')
-                return self.code
-            elif choice == 'm':
-                ingameMenu.menu(self.player)
-            else:
-                newpos = sorted(self.destinations)[choice-1]
-                print('You have moved to %s.'%(Locations[newpos].name))
-                print(Locations[newpos].description) # just testing
-                return newpos
-
 class Place(object):
     def __init__(self, code, name, description,Type):
         self.code = code
@@ -70,26 +79,28 @@ class Place(object):
         self.description = description
         self.actions = {1:('Do something', self.dosomething), 2:('Talk to the owner', self.talk), 0:('Leave', self.leave)}
     def takeaction(self,player):
-        self.player=player
         print("What do you want to do?")
         while True:
             for key, val in sorted(self.actions.items())[1:]:
                 print(key, val[0])
             print(0, self.actions[0][0])
-            choice=univ.IntChoice(len(self.actions), ['x','m'],[0])
-            if choice == 'x' or choice == 0:
-                self.leave()
-                break
+            choice=univ.IntChoice(len(self.actions), ['x','m','q'],[0])
+            if choice == 'q':
+                print("Quitting...")
+                return (player, quit)
+            elif choice == 'x' or choice == 0:
+                return self.leave(player)
             elif choice == 'm':
                 ingameMenu.menu(player)
             else:
-                self.actions[choice][1]()
-    def dosomething(self):
+                self.actions[choice][1](player)
+    def dosomething(self, player):
         print('Something has been done.')
-    def talk(self):
+    def talk(self, player):
         print('Talking to owner...')
-    def leave(self):
-        print("Leaving.")
+    def leave(self, player):
+        print("Leaving...")
+        return (player, displayPlaces)
 
 class Shop(Place):
     """Class for shops selling different things."""
@@ -100,12 +111,13 @@ class Shop(Place):
         self.actions[3] = ('Shop', self.shopfront)
         # with open(code+'_s.csv', 'r') as file:
             # pass
-    def shopfront(self):
+    def shopfront(self, player):
         print(self.intro)
-        print("""What would you like to do?
-1. Sell
-2. Buy
-3. Exit""")
+        self.inv = player.inventory
+        print("What would you like to do?\n"
+              "1. Sell\n"
+              "2. Buy\n"
+              "3. Exit\n")
         while True:
             choice = univ.IntChoice(3, [], [])
             if choice == 1:
@@ -128,14 +140,14 @@ class FishSpot(Place):
         self.loottable = './tables/'+code+'_t.csv'
         self.actions[3] = ("Fish!", self.StartFishing)
         # self.weather = weather  # add this later
-    def StartFishing(self):
+    def StartFishing(self, player):
         with open(self.loottable, 'r') as file:
             reader = dict(csv.reader(file))
             while True:
                 fish = input("Would you like to fish? Press Y for yes, N for no.\n>> ").strip().lower()
                 if fish == "y":
-                    if gamecode.player.inventory['i00000'] >0:
-                        gamecode.player.inventory['i00000'] -= 1
+                    if player.inventory['i00000'] >0:
+                        player.inventory['i00000'] -= 1
                         rng = random.randint(1,100)
                         catch = False
                         for key in reader:
@@ -143,22 +155,22 @@ class FishSpot(Place):
                                 player.inventory[key]+=1
                                 print('You caught a [',univ.ListOfItems[key].item_name,'] .')
                                 print("You have",player.inventory[key],univ.ListOfItems[key].item_name+'.')
-                                # self.suc_fish(univ.ListOfItems[key].exp)
+                                player = self.suc_fish(player,univ.ListOfItems[key].exp)
                                 print("You got %s exp" % (univ.ListOfItems[key].exp))
                                 catch = True
                                 break
                         if catch == False:
                             print("You didn't catch anything.")
-                            # self.suc_fish(0)
+                            player = self.suc_fish(player,0)
                     else: print ("You have no units of fishing juice left. Try waiting at least another hour.")
                 elif fish == "n": 
-                    self.takeaction()
+                    return (player, self.takeaction)
                     break
                 else:  univ.error(2)
-    def suc_fish(self, fish_exp):
-        print ("You have",self.inventory['i00000'],"fishing juice remaining.")
-        self.exp['fishing'] += fish_exp
-        self.save()
+    def suc_fish(self,player,fish_exp):
+        print ("You have",player.inventory['i00000'],"fishing juice remaining.")
+        player.exp['fishing'] += fish_exp
+        return player
 
 Locations = {}
 

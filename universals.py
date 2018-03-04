@@ -116,6 +116,9 @@ class Player(object):
 def error(number):
     print ("Error %s: That is invalid. Try again." % (number)) 
 
+yes = ['yes','y','ya','ye','1','True']
+no = ['no','na','n','0','False']
+
 def IntChoice(maxvalue,globalexcept, localexcept):
     while True:
         choice = input(">> ")

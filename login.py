@@ -3,18 +3,19 @@ import time
 import csv
 import json
 from pathlib import Path
+import universals as univ
 
 def acct_ask(): #This is complete
     while True:
         exist = input("Do you already have an account? (Y/N)\n>>" ).strip().lower()
-        if exist=='y' or exist=='ye'or exist=='yes' or exist=='1':
+        if exist in univ.yes:
             log_in()
             break
-        elif exist=='n' or exist=='no' or exist=='0':
+        elif exist in univ.no:
             new_acct()
             break
         else:
-            print ('Invalid response, please try again.\n')
+            univ.error(0)
 
 def new_acct():
     uname = input("Select new username:\n>> ").strip()
@@ -22,10 +23,8 @@ def new_acct():
         with open('./PlayerAccts/'+uname+'_p.json', 'x') as playerfile:
             print ('Creating account with username %s...' % (uname))
             skills = ['fishing']
-            exp = {}
-            for skill in skills:
-                exp[skill] = 0
-            stats = {'username': uname, 'password':'','createtime':time.time(),'lastlogin':0,'exp':exp, 'inventory':{}, 'position':'here'} #set lastlogin to 0 on acct creation
+            exp = dict.fromkeys(skills,0)
+            stats = {'username': uname, 'password':'','createtime':time.time(),'lastlogin':0,'exp':exp, 'inventory':{}, 'position':'000'} #set lastlogin to 0 on acct creation
             while True:
                 pw = input("Enter a password longer than 3 characters, or type 'back' to cancel.\n>>")
                 if pw.lower() == 'back':
@@ -59,8 +58,8 @@ def log_in():
             if pw == reader['password']:
                 print ('Successfully logged in to account %s.' % (uname))
                 file.close()
-                import gamecodejson
-                gamecodejson.rungame(uname)
+                import gamewrapper
+                gamewrapper.start_acct(uname)
             else:
                 print ('Sorry, the username and password didn\'t match.')
                 acct_ask()

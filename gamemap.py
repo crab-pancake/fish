@@ -38,6 +38,9 @@ def travel(player):
         if choice == 0 or choice == 'x':
             print('Returning to old place... ')
             return (player, displayPlaces)
+        elif choice == 'q':
+            print("Quitting...")
+            return (player, quit)
         elif choice == 'm':
             ingameMenu.menu(player)
         else:
@@ -48,7 +51,7 @@ def travel(player):
 
 def quit(player):
     answer = input("Are you sure you want to quit? Type yes to confirm, or anything else to cancel.\n>> ").strip().lower()
-    if answer in['yes','ye','y']:
+    if answer in univ.yes:
         print("Thanks for playing, see you again soon.")
         return (player, None)
     else:
@@ -156,7 +159,7 @@ class FishSpot(Place):
                                 print('You caught a [',univ.ListOfItems[key].item_name,'] .')
                                 print("You have",player.inventory[key],univ.ListOfItems[key].item_name+'.')
                                 player = self.suc_fish(player,univ.ListOfItems[key].exp)
-                                print("You got %s exp" % (univ.ListOfItems[key].exp))
+                                print("You got %s exp. " % (univ.ListOfItems[key].exp))
                                 catch = True
                                 break
                         if catch == False:
@@ -170,6 +173,7 @@ class FishSpot(Place):
     def suc_fish(self,player,fish_exp):
         print ("You have",player.inventory['i00000'],"fishing juice remaining.")
         player.exp['fishing'] += fish_exp
+        player.save()
         return player
 
 Locations = {}

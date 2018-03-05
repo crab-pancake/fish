@@ -1,7 +1,6 @@
 .csv files will have suffixes in order to denote their purpose. 
 
-g: player game info file
-i: player account info file
+p: player file
 
 t: loot table
 l: location

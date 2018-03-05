@@ -1,4 +1,4 @@
 code,min_level,name,description
-zero,0,pond,A small pond.
-one,20,lake,A calm lake.
-two,50,river,A gently flowing river.
+l0003,20,lake,A calm lake.
+l0013,0,pond,A small pond.
+l0023,50,river,A gently flowing river.

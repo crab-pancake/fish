@@ -1,3 +1,2 @@
-code,name,desc,type,introline,exitline
-l0011,shoppy,A shop.,shop,hello!,bye!
-l0012,bakero,A bread shop.,shop,hi!,cya!
+code,name,desc,type,min_level
+l0011,pond,A small pond.,FishSpot,0

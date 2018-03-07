@@ -92,7 +92,7 @@ class Place(object):
         self.actions = {1:('Do something',self.dosomething), 2:('Talk to the owner',self.talk), 0:('Leave', self.leave)}
     def takeaction(self,player):
         while True:
-            print("\nameWhat do you want to do?")
+            print("\nWhat do you want to do?")
             for key, val in sorted(self.actions.items())[1:]:
                 print(key, val[0])
             print(0, self.actions[0][0])
@@ -245,7 +245,7 @@ Locations = {}
 with open('locations_l.csv', 'r') as file:
     reader = csv.DictReader(file)
     for row in reader:
-        location = Location(*args)
+        location = Location(row['code'], row['name'], row['description'], row['travel'])
         Locations[row['code']] = location
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ def mover(account):
 def start_acct(uname):
     with open('./PlayerAccts/'+uname+'_p.json', 'r') as file:
         reader = json.load(file) # This returns a dictionary with all the information in it. 
-        player = univ.Player(reader['username'], reader['password'], reader['createtime'], reader['lastlogin'], reader['exp'], reader['inventory'], reader['position'])
+        player = univ.Player(**reader)
         if player.lastlogin == 0: # If this is the first access of the game, then ptimeraw == 0
             print('running first mode') #for debug purposes
             player.updatetime()

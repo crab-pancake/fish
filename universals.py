@@ -64,7 +64,7 @@ with open('allitems_m.csv', 'r') as readfile:
         ListOfItems[ThisItem.code] = ThisItem
 
 class Player(object):
-    def __init__(self, username, password, createtime, lastlogin, exp, inventory, position):
+    def __init__(self, username, password, createtime, lastlogin, exp, inventory, position,*args):
         self.username = username
         self.password = password
         self.createtime = createtime
@@ -74,7 +74,7 @@ class Player(object):
         self.position = position
         self.hsll = (time.time() - float(lastlogin))/3600
     def updatetime(self):
-        self.lastlogin = time.time()
+        self.lastlogin = int(time.time())
     def save(self):
         stats = {
         "username": self.username,
@@ -87,23 +87,6 @@ class Player(object):
         }
         with open('./PlayerAccts/'+self.username+'_p.json', 'w') as file:
             json.dump(stats, file)
-    def display_menu(self):
-        while True:
-            menu = input("\nMENU\n"
-                    "----------------------------\n"
-                    "1. Display inventory\n"
-                    "4. Help\n"
-                    "5. Exit game\n> ")
-            if menu =="1":
-                self.inv_display()
-            elif menu == "4":
-                self.help_display()
-            elif menu == "5":
-                print ("Saving and exiting game.")
-                self.save()
-                print ("Complete.")
-                break
-            else: error(0)
     def disp_currency(self, currency):
         print("You now have %s %s." % (self.inventory[currency],univ.ListOfItems[currency].description))
     def help_display(self):
@@ -112,14 +95,19 @@ class Player(object):
         print("YOUR INVENTORY:\n-------------------------")
         for key in self.inventory:
             print('%s: %s' % (univ.ListOfItems[key].description, self.inventory[key]))
+    def __enter__(self):
+        return self
+    def __exit__(self, *a):
+        pass
 
 def error(number):
     print ("Error %s: That is invalid. Try again." % (number)) 
 
 yes = ['yes','y','ya','ye','1','True']
 no = ['no','na','n','0','False']
+skills = ['fishing']
 
-def IntChoice(maxvalue,globalexcept, localexcept):
+def IntChoice(maxvalue,globalexcept,localexcept):
     while True:
         choice = input(">> ")
         try:

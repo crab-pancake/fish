@@ -1,9 +1,9 @@
 import random
 import time
-import csv
-import json
+import csv, json
 from pathlib import Path
 import universals as univ
+import hashlib, getpass
 
 def acct_ask(): #This is complete
     while True:
@@ -22,18 +22,17 @@ def new_acct():
     try:
         with open('./PlayerAccts/'+uname+'_p.json', 'x') as playerfile:
             print ('Creating account with username %s...' % (uname))
-            skills = ['fishing']
-            exp = dict.fromkeys(skills,0)
-            stats = {'username': uname, 'password':'','createtime':time.time(),'lastlogin':0,'exp':exp, 'inventory':{}, 'position':'000'} #set lastlogin to 0 on acct creation
+            exp = dict.fromkeys(univ.skills,0)
+            stats = {'username': uname, 'password':'','createtime':int(time.time()),'lastlogin':0,'exp':exp, 'inventory':{}, 'position':'000'} #set lastlogin to 0 on acct creation
             while True:
-                pw = input("Enter a password longer than 3 characters, or type 'back' to cancel.\n>>")
+                pw = hashlib.sha256(getpass.getpass("Enter a password longer than 3 characters, or type 'back' to cancel.\n>>").encode('utf-8')).hexdigest()
                 if pw.lower() == 'back':
                     acct_ask()
                     break
                 elif len(pw) < 3:
                     print ('Please enter a password longer than 3 characters.')
                 else:
-                    pwconfirm = input("Confirm password.\n>>")
+                    pwconfirm = hashlib.sha256(getpass.getpass("Confirm password.\n>> ").encode('utf-8')).hexdigest()
                     if pw == pwconfirm:
                         stats['password'] = pw #change this to write hash of password: import hashlib, find out how this works
                         json.dump(stats, playerfile)
@@ -54,7 +53,7 @@ def log_in():
     if acc_path.is_file():
         with open('./PlayerAccts/'+uname+'_p.json', 'r') as file:
             reader = json.load(file)
-            pw = input("Please type your password.\n>> ")
+            pw = hashlib.sha256(getpass.getpass("Please enter your password.\n>> ").encode('utf-8')).hexdigest()
             if pw == reader['password']:
                 print ('Successfully logged in to account %s.' % (uname))
                 file.close()
@@ -66,5 +65,7 @@ def log_in():
     else:
         print ('Account by the name of %s doesn\'t exist.' % (uname))
         acct_ask()
+
+
 
 acct_ask()

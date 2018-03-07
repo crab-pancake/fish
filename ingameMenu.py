@@ -3,7 +3,7 @@ import json
 import time
 
 def menu(player):
-    menu_options = {1:("Display Inventory",disp_inventory), 2:("Display Position",disp_position), 3:("Other Info",other_info), 4:("Save",save), 5:("Return to game",return_to_game), 0:("Exit Game",exit)}
+    menu_options = {1:("Display Inventory",disp_inventory), 2:("Display Position",disp_position), 3:("Other Info",other_info), 4:("Save",save), 5:("Return to game",return_to_game), 6:("Help", help_), 0:("Exit Game",exit)}
     while True:
         print("\n~~~MENU~~~\n")
         for key in menu_options:
@@ -37,6 +37,28 @@ def exit(player):
     print("\nExiting program...")
     import gamemap.quit
     return (player, gamemap.quit)
+
+def help_(player):
+    print("""\n~~~HELP~~~
+    ----------------------------
+    History:
+    Jerry and Dayu thought of this game as they were walking with Evan and Mummy, along Lake Nordenskjoeld, W-Trek, Patagonia, Chile in late December 2017. 
+    The inspiration came from many hours of idle chat, but at least it encouraged them to do somethiing productive!
+
+    Aim:
+    This is a time based game, where you as the player character gather 'fishing juice' to catch fish, upgrade your setup and further your fishing capabilities.
+
+    Initial setup:
+    You'll begin with 10 fishing juice and no fish. Under the 'Menu' option, choose 'Fish!' to use up your fishing juice and catch fish.
+    Each time you'll have a go at fishing and deplete your fishing juice by one. 
+    You'll gather more fishing juice by logging off (1 per hour is the base rate) and relogging on.
+
+    Buying and selling:
+    Enter the corresponding number 'Visit shop' in order to buy and sell your fish to gain gold. Use your gold to upgrade your fishing set up. 
+    For example, the cheapest upgrade will is the 'Reinforced net', which will increase your fishing juice gathering rate by 10%.
+
+    Final words:
+    Good luck! We'll be slowly adding in extra features, but be patient as we are new :3""")
 
 def return_to_game(player):
     print("\nReturning to game...")

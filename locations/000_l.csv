@@ -1,2 +1,2 @@
-code,name,desc,type,introline,exitline
+code,name,desc,type,IntroLine,ExitLine
 l0001,shoppo,A shop.,shop,hello!,bye!

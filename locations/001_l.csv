@@ -1,2 +1,2 @@
-code,name,desc,type,min_level
-l0011,pond,A small pond.,FishSpot,0
+code,name,desc,type,reqEquip,reqMats,min_lvl
+l0011,Pond,A small pond.,FishSpot,[],[i00000:1],0

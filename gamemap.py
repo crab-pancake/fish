@@ -64,7 +64,7 @@ def quit(player):
         return (player, displayPlaces)
 
 class Location(object):
-    def __init__(self,code,name,description,travel):
+    def __init__(self,code,name,description,travel,**kwargs):
         self.code = code
         self.name = name
         self.description = description
@@ -74,9 +74,9 @@ class Location(object):
             for row in reader:
                 i=1
                 if row['type'] == 'shop':
-                    self.places[i] = (row['name'], Shop(row['code'],row['name'],row['desc'],row['type'],row['introline'],row['exitline']))
+                    self.places[i] = (row['name'], Shop(**row))
                 elif row['type'] == 'FishSpot':
-                    self.places[i] = (row['name'], FishSpot(row['code'],row['name'],row['desc'],row['type'],row['min_level']))
+                    self.places[i] = (row['name'], FishSpot(**row))
                 i+=1
         self.destinations = travel.split(';')
     def __enter__(self):
@@ -85,7 +85,7 @@ class Location(object):
         pass
 
 class Place(object):
-    def __init__(self,code,name,description,Type):
+    def __init__(self,code,name,description,**kwargs):
         self.code = code
         self.name = name
         self.description = description
@@ -120,8 +120,8 @@ class Place(object):
 
 class Shop(Place):
     """Class for shops selling different things."""
-    def __init__(self, code, name,description,Type, IntroLine, ExitLine):
-        super().__init__(code,name,description,Type)
+    def __init__(self,code,name,desc,IntroLine,ExitLine,**kwargs):
+        super().__init__(code,name,desc)
         self.intro = IntroLine
         self.exit = ExitLine
         self.actions[3] = ('Shop', self.shopfront)
@@ -150,90 +150,66 @@ class Shop(Place):
 
 class TrainingSpot(Place):
     """Superclass for skill training spots"""
-    def __init__(self,code,name,description,Type,skill,reqEquip,reqMats,min_level,successline,failline):
-        super().__init__(code,name,description,Type)
-        self.min_level=min_level
+    def __init__(self,code,name,description,skill,reqEquip,reqMats,min_lvl,failline,action,**kwargs):
+        super().__init__(code,name,description)
+        self.min_lvl=int(min_lvl)
         self.skill=skill
         self.reqEquip=reqEquip
-        self.reqMats=reqMats #reqMats will be a dict
+        self.reqMats={k:int(v) for k,v in (x.split(':') for x in (reqMats.strip("[]")).split(';'))} #Get a string of form [k1:v1;k2:v2] and turn it into a dict
         self.loottable='./tables/'+code+'_t.csv'
-        self.successline=successline
         self.failline=failline
+        self.action=action
+        self.actions[3] = (self.action.title()+"!", self.TrainSkill)
     def TrainSkill(self, player):
-        if player.exp[self.skill] < self.min_level: #*univ.levelmult
-            print("Your [ %s ] level isn't high enough to work here.\n"
-                "The minimum level for this spot is %s, your level is [ %s ]."%(self.skill,self.min_level,player.exp[self.skill]))#exp must be divided by levelmult eventually
-            #return something? (player, )
+        if player.exp[self.skill] < self.min_lvl: #*univ.levelmult
+            print("Your [ %s ] level isn't high enough to %s here.\n"
+                "The minimum level for this spot is %s, your level is [ %s ]."%(self.skill,self.action,self.min_lvl,player.exp[self.skill]))#exp must be divided by levelmult eventually
+            return (player, displayPlaces)
         else:
             with open(self.loottable,'r') as file:
                 reader=dict(csv.reader(file))
                 while True:
-                    choice=input("Do you want to work here? (Y/N)\n>> ").strip().lower()
+                    choice=input("Do you want to %s here? (Y/N)\n>> "%(self.action)).strip().lower()
                     if choice in univ.yes:
                         enoughStuff=True
-                        for item in reqMats:
-                            if player.inventory[item] < reqMats[item]:
+                        for item in self.reqMats:
+                            if player.inventory[item] < self.reqMats[item]:
                                 enoughStuff=False
                                 print("You don't have enough [ %s ].\n"
                                       "Required: %s\n"
                                       "Your inventory: %s"%(univ.ListOfItems[item].name, reqMats[item],player.inventory[item]))
                                 return (player,displayPlaces)
                         if enoughStuff:
-                            success=False
-                            rng=random.randint(1000)
+                            success=False# dropper(player,self.loottable)
+                            rng=random.randint(0,100)
                             for item in reader:
                                 if rng>=int(reader[item]):
                                     success=True
                                     player.inventory[item]+=1
-                                    print(self.successline(player,key))
+                                    print(self.successline(player,item))
                                     print("You gained [ %s ] %s experience. "%(univ.ListOfItems[item].exp,self.skill))
                                     # Possibly add another part for lucky items? Chests, extra fish, etc. 
                                     break
+                            for item in self.reqMats:
+                                player.inventory[item] -= self.reqMats[item]
+                                print("You have [ %s ] %s remaining."%(player.inventory[item],univ.ListOfItems[item].name))
+                            player.save()
                             if not success:
                                 print(self.failline)
-                    else:
+                    elif choice in univ.no:
                         return (player,displayPlaces)
+                    else: univ.error(0)
 
-class FishSpot(Place):
+class FishSpot(TrainingSpot):
     """Class for fishing spots."""
-    def __init__(self,code,name,description,Type,min_level):
+    def __init__(self,code,name,desc,reqEquip,reqMats,min_lvl,**kwargs):
         self.skill='fishing'
-        super().__init__(code,name,description,Type)#skill,reqMats,min_level,successline,failline
-        self.min_level = min_level
-        self.loottable = './tables/'+code+'_t.csv'
-        self.reqMats="reqMats"
-        self.failline=""
-        self.actions[3] = ("Fish!", self.StartFishing) #self.TrainSkill
+        self.failline="You didn't manage to catch anything."
+        self.action="fish"
+        super().__init__(code,name,desc,self.skill,reqEquip,reqMats,min_lvl,self.failline,self.action)
         # self.weather = weather  # add this later
     def successline(self,player,item):
         return "You successfully caught a %s!\nYou now have %s %s."%(univ.ListOfItems[item].name,player.inventory[item],univ.ListOfItems[item].name)
-    def StartFishing(self, player):
-        with open(self.loottable, 'r') as file:
-            reader = dict(csv.reader(file))
-            while True:
-                fish = input("Would you like to fish? Press Y for yes, N for no.\n>> ").strip().lower()
-                if fish in univ.yes:
-                    if player.inventory['i00000'] >0:
-                        player.inventory['i00000'] -= 1
-                        rng = random.randint(1,100)
-                        catch = False
-                        for key in reader:
-                            if rng >= int(reader[key]):
-                                player.inventory[key]+=1
-                                print('You caught a [',univ.ListOfItems[key].item_name,'] .')
-                                print("You have",player.inventory[key],univ.ListOfItems[key].item_name+'.')
-                                player = self.suc_fish(player,univ.ListOfItems[key].exp)
-                                print("You got %s exp. " % (univ.ListOfItems[key].exp))
-                                catch = True
-                                break
-                        if catch == False:
-                            print("You didn't catch anything.")
-                            player = self.suc_fish(player,0)
-                    else: print ("You have no fishing juice left. Try waiting at least another hour.")
-                elif fish in univ.no: 
-                    return (player, self.takeaction)
-                    break
-                else:  univ.error(2)
     def suc_fish(self,player,fish_exp):
         print ("You have",player.inventory['i00000'],"fishing juice remaining.")
         player.exp['fishing'] += fish_exp
@@ -253,4 +229,16 @@ if __name__ == "__main__":
     with open('./PlayerAccts/test_acct_p.json', 'r') as file:
         reader = json.load(file)
     player = univ.Player(**reader)
-    Locations[player.position].displayplaces(player)
+    nextAction = displayPlaces
+    while True:
+        returned = nextAction(player)
+        player = returned[0]
+        prevAction=nextAction
+        nextAction = returned[1]
+        player.save()
+        if nextAction == None:
+            break
+        elif nextAction=="prev":
+            nextAction=prevAction
+        else:
+            myTuple=nextAction

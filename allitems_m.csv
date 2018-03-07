@@ -1,13 +1,13 @@
-code,item_name,description,exp,min_level,sale_p,buy_p,h2,h3,i_type
-i00000,f_j,Fishing Juice,0,0,0,0,0,0,bait
-i00001,gold,Gold Pieces,0,0,0,0,0,0,misc
-i01001,mackerel,Mackerel,1,1,3,0,0,0,fish
-i01002,cockle,Cockle,2,2,4,0,0,0,fish
-i01003,s_karp,Shiny Magikarp,5,5,99,0,0,0,fish
-i01004,trout,Trout,7,7,7,0,0,0,fish
-i01005,salmon,Salmon,9,10,8,0,0,0,fish
-i01006,tuna,Tuna,11,13,10,0,0,0,fish
-i02001,net,Basic Net,0,1,0,10,0,0,equipment
-i02002,d_net,Drift Net,0,5,0,25,0,0,equipment
-i02003,c_net,Cast Net,0,10,0,100,0,0,equipment
-i02004,ps_net,Purse Seine,0,20,0,1000,0,0,equipment
+code,name,desc,exp,h1,sale_p,buy_p,h2,h3,i_type
+i00000,Fishing Juice,A unit of fishing juice,0,0,0,0,0,0,bait
+i00001,Gold Pieces,Shiny pieces of gold,0,0,0,0,0,0,misc
+i01001,Mackerel,A fishy,1,1,3,0,0,0,fish
+i01002,Cockle,A shellfishy,2,2,4,0,0,0,fish
+i01003,Shiny Magikarp,A golden fishy,5,5,99,0,0,0,fish
+i01004,Trout,Bear food,7,7,7,0,0,0,fish
+i01005,Salmon,Not to be used for PK-ing,9,10,8,0,0,0,fish
+i01006,Tuna,Harpoons are good,11,13,10,0,0,0,fish
+i02001,Badic Net,Basic Net,0,1,0,10,0,0,equipment
+i02002,Drift Net,Drift Net,0,5,0,25,0,0,equipment
+i02003,Cast Net,CastaNets,0,10,0,100,0,0,equipment
+i02004,Purse Seine,Probably not practical,0,20,0,1000,0,0,equipment

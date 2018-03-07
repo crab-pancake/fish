@@ -17,17 +17,18 @@ def menu(player):
 def disp_inventory(player):
     print("\n~~~YOUR INVENTORY~~~\n")
     for key in player.inventory:
-        print(univ.ListOfItems[key].description +": " + str(player.inventory[key]))
+        print(univ.ListOfItems[key].name +": " + str(player.inventory[key]))
 
 def disp_position(player):
+    from gamemap import Locations
     print("\n~~~YOUR POSITION~~~\n"
-        "Position:" + player.position)
+        "Position: "+Locations[player.position].name)
 
 def other_info(player):
     print("\n~~~OTHER INFO~~~\n"
         "\nCreate Time: %s"
         "\nLast Login Time: %s"
-        "\nExperience: %s"(time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.createtime)),time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.lastlogin)),player.exp['fishing']))
+        "\nExperience: %s"%(time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.createtime)),time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.lastlogin)),player.exp['fishing']))
 
 def save(player):
     print('saved')

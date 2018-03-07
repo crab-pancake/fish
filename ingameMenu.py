@@ -25,9 +25,9 @@ def disp_position(player):
 
 def other_info(player):
     print("\n~~~OTHER INFO~~~\n"
-        "\nCreate Time: %s"%(time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.createtime)),)
-        "\nLast Login Time: %s"%(time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.lastlogin)),)
-        "\nExperience: %s"%(player.exp['fishing']))
+        "\nCreate Time: %s"
+        "\nLast Login Time: %s"
+        "\nExperience: %s"(time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.createtime)),time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.lastlogin)),player.exp['fishing']))
 
 def save(player):
     print('saved')

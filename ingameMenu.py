@@ -7,7 +7,7 @@ def menu(player):
     while True:
         print("\n~~~MENU~~~\n")
         for key in menu_options:
-        	print(str(key)+". "+menu_options[key][0])
+            print(str(key)+". "+menu_options[key][0])
         print("\nEnter the corresponding number:\n")
         choice = univ.IntChoice(len(menu_options),[],[0])
         var = menu_options[choice][1](player)
@@ -25,9 +25,9 @@ def disp_position(player):
 
 def other_info(player):
     print("\n~~~OTHER INFO~~~\n"
-        "\nCreate Time: %s"
-        "\nLast Login Time: %s" 
-        "\nExperience: %s" % (time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.createtime)), time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.lastlogin)), player.exp['fishing']))
+        "\nCreate Time: %s"%(time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.createtime)),)
+        "\nLast Login Time: %s"%(time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.lastlogin)),)
+        "\nExperience: %s"%(player.exp['fishing']))
 
 def save(player):
     print('saved')
@@ -40,8 +40,7 @@ def exit(player):
 
 def return_to_game(player):
     print("\nReturning to game...")
-    import gamemap.displayPlaces
-    return (player, gamemap.displayPlaces)
+    return (player,"prev")
 
 if __name__ == "__main__":
     reader=''

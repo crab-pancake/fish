@@ -7,10 +7,13 @@ def mover(account):
     while True:
         returned = nextAction(account) # returned will be a tuple of (playerObject, player'sNextAction)
         account = returned[0]
+        prevAction=nextAction
         nextAction = returned[1]
         account.save()
         if nextAction == None:
             break
+        elif nextAction=="prev":
+            nextAction=prevAction
         else:
             myTuple=nextAction
 

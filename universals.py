@@ -8,9 +8,9 @@ class Item(object):
         self.code = code
         self.name = name
         self.desc = desc
-        self.exp = exp
-        self.sale_p = sale_p
-        self.buy_p = buy_p
+        self.exp = int(exp)
+        self.sale_p = int(sale_p)
+        self.buy_p = int(buy_p)
         self.h2 = h2
         self.h3 = h3
         self.type = 'other'
@@ -18,12 +18,15 @@ class Item(object):
         return "Item with code %s, name %s" % (self.code, self.name)
     def __repr__(self):
         return "Item(%r, %r, %r, %r)" % (self.code, self.name, self.desc, self.exp)
+    def __enter__(self):
+        return self
+    def __exit__(self, *args):
+        pass
 
 class Fish(Item):
     def __init__(self,code,name,desc,exp,h1,sale_p,buy_p,h2,h3,**kwargs):
         super().__init__(code,name,desc,exp,sale_p,buy_p,h2,h3)
         self.type = 'fish'
-        self.sell_price = 5
     def __str__(self):
         return "Fish item with code %s, name %s" % (self.code, self.name)
     def __repr__(self):
@@ -62,7 +65,7 @@ with open('allitems_m.csv', 'r') as readfile:
         ListOfItems[ThisItem.code] = ThisItem
 
 class Player(object):
-    def __init__(self, username, password, createtime, lastlogin, exp, inventory, position,*args):
+    def __init__(self, username, password, createtime, lastlogin, exp, inventory, position,equipment,*args):
         self.username = username
         self.password = password
         self.createtime = createtime
@@ -71,6 +74,7 @@ class Player(object):
         self.inventory = inventory
         self.position = position
         self.hsll = (time.time() - float(lastlogin))/3600
+        self.equipment=equipment
     def updatetime(self):
         self.lastlogin = int(time.time())
     def save(self):
@@ -81,18 +85,19 @@ class Player(object):
         "lastlogin": self.lastlogin,
         "exp": self.exp,
         "inventory": self.inventory,
-        "position": self.position
+        "position": self.position,
+        "equipment":self.equipment
         }
         with open('./PlayerAccts/'+self.username+'_p.json', 'w') as file:
             json.dump(stats, file)
     def disp_currency(self, currency):
-        print("You now have %s %s." % (self.inventory[currency],univ.ListOfItems[currency].name))
+        print("You now have %s %s." % (self.inventory[currency],ListOfItems[currency].name))
     def help_display(self):
         print("HELP\n")
     def inv_display(self): 
         print("YOUR INVENTORY:\n-------------------------")
         for key in self.inventory:
-            print('%s: %s' % (univ.ListOfItems[key].name, self.inventory[key]))
+            print('%s: %s' % (ListOfItems[key].name, self.inventory[key]))
     def __enter__(self):
         return self
     def __exit__(self, *a):
@@ -115,7 +120,7 @@ def IntChoice(maxvalue,globalexcept,localexcept):
             else:
                 error(0)
         except ValueError:
-            if choice in globalexcept:
-                return choice
+            if choice.lower() in globalexcept:
+                return choice.lower()
             else:
                 error(2)

@@ -17,6 +17,9 @@ def mover(account):
         else:
             myTuple=nextAction
 
+def relog(player):
+    pass
+
 def start_acct(uname):
     with open('./PlayerAccts/'+uname+'_p.json', 'r') as file:
         reader = json.load(file) # This returns a dictionary with all the information in it. 

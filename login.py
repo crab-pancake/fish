@@ -23,7 +23,7 @@ def new_acct():
         with open('./PlayerAccts/'+uname+'_p.json', 'x') as playerfile:
             print ('Creating account with username %s...' % (uname))
             exp = dict.fromkeys(univ.skills,0)
-            stats = {'username': uname, 'password':'','createtime':int(time.time()),'lastlogin':0,'exp':exp, 'inventory':{}, 'position':'000'} #set lastlogin to 0 on acct creation
+            stats = {'username': uname, 'password':'','createtime':int(time.time()),'lastlogin':0,'exp':exp, 'inventory':{}, 'position':'000','equipment':{}} #set lastlogin to 0 on acct creation
             while True:
                 pw = hashlib.sha256(getpass.getpass("Enter a password longer than 3 characters, or type 'back' to cancel.\n>>").encode('utf-8')).hexdigest()
                 if pw.lower() == 'back':
@@ -33,7 +33,7 @@ def new_acct():
                     print ('Please enter a password longer than 3 characters.')
                 else:
                     pwconfirm = hashlib.sha256(getpass.getpass("Confirm password.\n>> ").encode('utf-8')).hexdigest()
-                    if pw == pwconfirm:
+                    if pw == pwconfirm
                         stats['password'] = pw #change this to write hash of password: import hashlib, find out how this works
                         json.dump(stats, playerfile)
                         print ('Password confirmed, please log in to your account.')

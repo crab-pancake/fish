@@ -3,7 +3,7 @@ import json
 import time
 
 def menu(player):
-    menu_options = {1:("Display Inventory",disp_inventory), 2:("Display Position",disp_position), 3:("Other Info",other_info), 4:("Save",save), 5:("Return to game",return_to_game), 6:("Help", help_), 0:("Exit Game",exit)}
+    menu_options = {1:("Display Inventory",disp_inv),2:("Display Position",disp_position),3:("Other Info",other_info),4:("Save",save),5:("Return to game",return_), 6:("Help", help_), 0:("Exit Game",exit)}
     while True:
         print("\n~~~MENU~~~\n")
         for key in menu_options:
@@ -14,7 +14,7 @@ def menu(player):
         if var:
             return var
 
-def disp_inventory(player):
+def disp_inv(player):
     print("\n~~~YOUR INVENTORY~~~\n")
     for key in player.inventory:
         print(univ.ListOfItems[key].name +": " + str(player.inventory[key]))
@@ -36,8 +36,8 @@ def save(player):
 
 def exit(player):
     print("\nExiting program...")
-    import gamemap.quit
-    return (player, gamemap.quit)
+    import gamemap
+    return (player,gamemap.quit)
 
 def help_(player):
     print("""\n~~~HELP~~~
@@ -61,7 +61,7 @@ def help_(player):
     Final words:
     Good luck! We'll be slowly adding in extra features, but be patient as we are new :3""")
 
-def return_to_game(player):
+def return_(player):
     print("\nReturning to game...")
     return (player,"prev")
 

@@ -25,7 +25,11 @@ def update(username):
             rdr['lastlogin']=int(rdr['lastlogin'])
         if len(rdr['password'])!=64:
             rdr['password']=hashlib.sha256(rdr['password'].encode('utf-8')).hexdigest()
-        player = univ.Player(rdr['username'], rdr['password'], rdr['createtime'], rdr['lastlogin'], rdr['exp'], rdr['inventory'], rdr['position'])
+        try:
+            rdr['equipment']
+        except KeyError:
+            rdr['equipment']={}
+        player = univ.Player(rdr['username'],rdr['password'],rdr['createtime'],rdr['lastlogin'],rdr['exp'],rdr['inventory'],rdr['position'],rdr['equipment'])
         newdict = {}
         for key in player.inventory:
             if key[0] == 'i':
@@ -38,6 +42,7 @@ def update(username):
         if len(player.position)!=3:
             player.position='000'
         player.save()
+    print("Account updated.")
 
 if __name__ == "__main__":
     while True:

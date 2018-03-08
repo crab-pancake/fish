@@ -7,7 +7,7 @@ i01003,Shiny Magikarp,A golden fishy,5,5,99,0,0,0,fish
 i01004,Trout,Bear food,7,7,7,0,0,0,fish
 i01005,Salmon,Not to be used for PK-ing,9,10,8,0,0,0,fish
 i01006,Tuna,Harpoons are good,11,13,10,0,0,0,fish
-i02001,Badic Net,Basic Net,0,1,0,10,0,0,equipment
+i02001,Basic Net,Basic Net,0,1,0,10,0,0,equipment
 i02002,Drift Net,Drift Net,0,5,0,25,0,0,equipment
 i02003,Cast Net,CastaNets,0,10,0,100,0,0,equipment
 i02004,Purse Seine,Probably not practical,0,20,0,1000,0,0,equipment

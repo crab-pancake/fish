@@ -71,7 +71,9 @@ class Player(object):
         self.createtime = createtime
         self.lastlogin = lastlogin
         self.exp = exp
-        self.inventory = inventory
+        self.inventory={}
+        for item in ListOfItems.keys():
+            self.inventory[item]=inventory.get(item, 0)
         self.position = position
         self.hsll = (time.time() - float(lastlogin))/3600
         self.equipment=equipment
@@ -83,9 +85,9 @@ class Player(object):
         "password": self.password,
         "createtime": self.createtime,
         "lastlogin": self.lastlogin,
-        "exp": self.exp,
-        "inventory": self.inventory,
-        "position": self.position,
+        "exp":self.exp,
+        "inventory":self.inventory,
+        "position":self.position,
         "equipment":self.equipment
         }
         with open('./PlayerAccts/'+self.username+'_p.json', 'w') as file:
@@ -94,6 +96,10 @@ class Player(object):
         print("You now have %s %s." % (self.inventory[currency],ListOfItems[currency].name))
     def help_display(self):
         print("HELP\n")
+    def relog(player):
+        for item in player.equipment.items():
+            print(ListOfItems[item].name)
+        player.inventory['i00000']+=int(player.hsll)
     def inv_display(self): 
         print("YOUR INVENTORY:\n-------------------------")
         for key in self.inventory:
@@ -124,3 +130,11 @@ def IntChoice(maxvalue,globalexcept,localexcept):
                 return choice.lower()
             else:
                 error(2)
+
+def updateDict(adict,actions,localexcept):
+    length=len(adict-len(localexcept))
+    for item in actions:
+        adict[length+1]=item
+        length+=1
+
+# exptable = {10x^2 for x in range(1,1000)}

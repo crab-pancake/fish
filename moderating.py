@@ -36,6 +36,8 @@ def update(username):
                 newdict[key]=player.inventory[key]
             else:
                 newdict['i'+key]=player.inventory[key]
+        for item in univ.ListOfItems.keys():
+            newdict[item]=player.inventory.get(item,0)
         player.inventory=newdict
         for skill in univ.skills:
             player.exp[skill] = player.exp.get(skill, 0)

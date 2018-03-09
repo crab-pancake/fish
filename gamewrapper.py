@@ -2,23 +2,21 @@ import json, time
 import universals as univ
 import gamemap as gmap
 
-def mover(account):
+def mover(player):
     nextAction = gmap.displayPlaces
     while True:
-        returned = nextAction(account) # returned will be a tuple of (playerObject, player'sNextAction)
-        account = returned[0]
+        returned = nextAction(player) # returned will be a tuple of (playerObject, player'sNextAction)
+        player = returned[0]
         prevAction=nextAction
         nextAction = returned[1]
-        account.save()
+        player.save()
         if nextAction == None:
             break
         elif nextAction=="prev":
             nextAction=prevAction
         else:
             myTuple=nextAction
-
-def relog(player):
-    pass
+    return player
 
 def start_acct(uname):
     with open('./PlayerAccts/'+uname+'_p.json', 'r') as file:
@@ -37,7 +35,7 @@ def start_acct(uname):
         elif player.lastlogin - player.createtime > 0: 
             print('running second mode') #for debug purposes
             player.updatetime()
-            player.inventory['i00000'] += int(player.hsll)
+            player.relog()
             player.save()
             print ("___________________\n"
                    "Welcome back to the game, %s!\n"
@@ -54,10 +52,7 @@ def start_acct(uname):
 if __name__ == "__main__":
     with open('./PlayerAccts/test_acct_p.json', 'w') as file:
         stats = {"username": "test_acct", "password": "","createtime": time.time(),"lastlogin": 0,
-            "exp": {"fishing": 0},"inventory": {},"position": "000"}
+            "exp": {"fishing": 0},"inventory": {},"position": "000", "equipment":{}}
         json.dump(stats, file)
     start_acct('test_acct')
-# else:
-#     print("imported from another module")
 
-# print("Thanks for playing! Come back soon.") # this prints out before anything else if you run from login module

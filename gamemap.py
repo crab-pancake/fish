@@ -30,11 +30,9 @@ def travel(player):
         traveller = {0:'Return'}
         print('Type the number of the town you want to travel to.')
         i=1
-        for location in sorted(pos.destinations):
-            traveller[i] = Locations[location].name
-            i+=1
-        for num, loc in sorted(traveller.items())[1:]:
-            print(num, traveller[num])
+        for num, location in enumerate(sorted(pos.destinations),1):
+            traveller[num] = Locations[location.strip()].name
+            print(num,Locations[location.strip()].name)
         print(0,traveller[0])
         while True:
             choice=univ.IntChoice(len(traveller), ['x','m'], [0])
@@ -50,8 +48,8 @@ def travel(player):
                     return action
             else:
                 player.position = sorted(pos.destinations)[choice-1]
-                print('You have moved to %s.'%(player.position.name))
-                print(player.position.desc)
+                print('You have moved to %s.'%(Locations[player.position].name))
+                print(Locations[player.position].desc)
                 return (player, displayPlaces)
 
 def quit(player):
@@ -64,7 +62,7 @@ def quit(player):
         return (player, displayPlaces)
 
 class Location(object):
-    def __init__(self,code,name,desc,travel,**kwargs):
+    def __init__(self,code,name,desc,travelling,**kwargs):
         self.code = code
         self.name = name
         self.desc = desc
@@ -78,7 +76,7 @@ class Location(object):
                 elif row['type'] == 'FishSpot':
                     self.places[i] = (row['name'], FishSpot(**row))
                 i+=1
-        self.destinations = travel.split(';')
+        self.destinations = travelling.split(';')
     def __enter__(self):
         return self
     def __exit__(self, *a):
@@ -89,7 +87,7 @@ class Place(object):
         self.code = code
         self.name = name
         self.description = description
-        self.actions = {1:('Do something',self.dosomething), 2:('Talk to the owner',self.talk), 0:('Leave', self.leave)}
+        self.actions = {0:('Leave', self.leave)}
     def takeaction(self,player):
         while True:
             print("\nWhat do you want to do?")
@@ -129,84 +127,86 @@ class Shop(Place):
         self.buy_stock = buy_stock.strip('[]').split(';')
         self.sell_stock = sell_stock.strip('[]').split(';')
         self.currency=currency
-        self.actions[3] = ('Shop', self.shopfront)
+        self.actions.update({1:('Shopfront', self.shopfront),2:("Sell your items",self.selltoshop),3:("Buy from the store",self.buyfromshop)})
     def shopfront(self, player):
         print(self.intro)
         self.inv = player.inventory
-        self.thisactions={1:("Sell",self.sell),2:("Buy",self.buy),0:("Leave",self.leave)}
+        self.thisactions={1:("Sell your items",self.selltoshop),2:("Buy from the store",self.buyfromshop),0:("Leave",self.leave)}
         while True:
-            print("What would you like to do?\n"
-              "1. Sell\n"
-              "2. Buy\n"
-              "0. Exit\n")
+            print("What would you like to do?")
+            for key in self.thisactions:
+                print(key, self.thisactions[key][0])
             choice = univ.IntChoice(3, ['q','x'], [0])
             if choice == "q":
                 return (player, quit)
             elif choice == "x" or choice==0:
                 print(self.exit)
-                return(player,displayPlaces)
+                return (player,displayPlaces)
             else:
                 self.thisactions[choice][1](player)
-    def sell(self,player):
-        self.page=0
+    def selltoshop(self,player):
         while True:
-            print("\nThis shop will purchase the following items from you:\n")
-            for key in self.buy_stock:
-                print("%s :%s    Sale price:%s" % (univ.ListOfItems[key].name, player.inventory[key], univ.ListOfItems[key].sale_p))
-            sale = input("Type in the EXACT name of the item you wish to sell. 'x' to return\n>> ").lower()
-            if sale == 'x':
+            print("\nYou can sell the following items here:\n")
+            selldict={0:'Leave'}
+            for num, key in enumerate(self.buy_stock,1):
+                selldict[num]=key
+                print(num,"%s: %sx    Sale price: %s each"%(univ.ListOfItems[key].name,player.inventory[key], univ.ListOfItems[key].sale_p))
+            print(0, selldict[0])
+            print('Which item would you like to sell?')
+            choice=univ.IntChoice(len(self.buy_stock),['x'],[0])
+            if choice == 'x' or choice==0:
                 break
-            for key in self.buy_stock:
-                if univ.ListOfItems[key].name.lower() == sale:
-                    while True:
-                        try:                    
-                            sale_q = int(input("How many [%s] would like you to sell? Maximum number to sell: [%s] Sale price: [%s]\n>> " % (univ.ListOfItems[key].name, player.inventory[key], univ.ListOfItems[key].sale_p)))
-                            if sale_q > player.inventory[key] or 0 > sale_q:
-                                univ.error(0)
-                            else:
-                                player.inventory[key] -= sale_q
-                                player.inventory['i00001'] += sale_q*univ.ListOfItems[key].sale_p
-                                print("You now have %s %s." % (player.inventory[key], univ.ListOfItems[key].name))
-                                player.disp_currency('i00001')
-                                # self.save()
-                                break
-                        except ValueError:
+            else:
+                key=selldict[choice]
+                while True:
+                    try:
+                        sale_q = int(input("How many [ %s ] would like you to sell? Maximum number to sell: [ %s ] Sale price: [ %s ] %s\n>> "
+                            %(univ.ListOfItems[key].name, player.inventory[key], univ.ListOfItems[key].sale_p,univ.ListOfItems[self.currency].name)))
+                        if sale_q > player.inventory[key] or 0 > sale_q:
                             univ.error(0)
-    def buy(self,player):
+                        else:
+                            player.inventory[key] -= sale_q
+                            player.inventory[self.currency] += sale_q*univ.ListOfItems[key].sale_p
+                            print("You now have %s %s." % (player.inventory[key], univ.ListOfItems[key].name))
+                            player.disp_currency(self.currency)
+                            # self.save()
+                            break
+                    except ValueError:
+                        univ.error(0)
+    def buyfromshop(self,player):
         self.page=0
-        print("The following items are available for purchase:")
-        for i in self.sell_stock:
-            print("%s: %s" %(univ.ListOfItems[i].name,univ.ListOfItems[i].buy_p))
+        print("The shop has the following items for sale:")
+        self.buydict={0:"Leave"}
+        for num, item in enumerate(self.sell_stock,1):
+            self.buydict[num]=item
+            print(num,"%s: %s"%(univ.ListOfItems[item].name,univ.ListOfItems[item].buy_p))
+        print(0,self.buydict[0])
         player.disp_currency(self.currency)
         while True:
-            purchase = input("Which item would you like to buy? {Type the exact name of the item. 'x' to return }\n>> ").strip().lower()
-            if purchase == 'x':
+            print("Which item would you like to buy? 'x' to return")
+            choice=univ.IntChoice(len(self.buydict),['x'],[0])
+            if choice == 'x' or choice==0:
                 break
-            itemfound=False
-            for key in self.sell_stock:
-                if univ.ListOfItems[key].name.lower()==purchase:
-                    itemfound=True
-                    with univ.ListOfItems[key] as buyitem:
-                        while True:
-                            buy_q = input("How many [ %s ] would you like to purchase? Purchase price: [ %s ]. 'x' to cancel\n>> " % (buyitem.name,buyitem.buy_p))
-                            if buy_q == 'x':
-                                break
-                            try:
-                                quantity = int(buy_q)
-                                if 0 < player.inventory[self.currency] < quantity*buyitem.buy_p:
-                                    univ.error(0)
-                                else:
-                                    player.inventory[key] += quantity
-                                    player.inventory[self.currency] -= quantity*buyitem.buy_p
-                                    print("You now have %s %s." % (player.inventory[key],buyitem.name))
-                                    player.disp_currency(self.currency)
-                                    # player.save()
-                                    break
-                            except ValueError:
-                                univ.error(0)
+            else:
+                buyitem=univ.ListOfItems[self.buydict[choice]]
+                while True:
+                    buy_q = input("How many [ %s ] would you like to purchase? Purchase price: [ %s ]. 'x' to cancel\n>> " % (buyitem.name,buyitem.buy_p))
+                    if buy_q == 'x':
+                        break
+                    try:
+                        quantity = int(buy_q)
+                        if player.inventory[self.currency] < quantity*buyitem.buy_p:
+                            print("You don't have enough money for that. ")#univ.error(0)
+                        else:
+                            player.inventory[buyitem.code] += quantity
+                            player.inventory[self.currency] -= quantity*buyitem.buy_p
+                            print("You now have %s %s." % (player.inventory[buyitem.code],buyitem.name))
+                            player.disp_currency(self.currency)
+                            # player.save()
                             break
-            if not itemfound:
-                print("No items found.")
+                    except ValueError:
+                        univ.error(0)
+                    break
 
 class TrainingSpot(Place):
     """Superclass for skill training spots"""
@@ -219,12 +219,20 @@ class TrainingSpot(Place):
         self.loottable='./tables/'+code+'_t.csv'
         self.failline=failline
         self.action=action
-        self.actions[3] = (self.action.title()+"!", self.TrainSkill)
+        self.actions.update({1:(self.action.title()+"!", self.TrainSkill)})
     def TrainSkill(self, player):
         if player.exp[self.skill] < self.min_lvl: #*univ.levelmult
             print("Your [ %s ] level isn't high enough to %s here.\n")%(self.skill.title(),self.action)
             print("The minimum level for this spot is %s, your level is [ %s ]."%(self.min_lvl,player.exp[self.skill]))#exp must be divided by levelmult eventually
             return (player, displayPlaces)
+        missingequip=[]
+        #for slot in self.reqEquip:
+            # if player.equipment[slot] != self.reqEquip[slot]:
+                # missingequip.append(self.reqEquip[slot])
+        if len(missingequip):
+            print("You don't have the required equipment to work here. You still need:")
+            for item in missingequip:
+                print("- %s "%(univ.ListOfItems[item].name))
         else:
             with open(self.loottable,'r') as file:
                 reader=dict(csv.reader(file))
@@ -237,7 +245,7 @@ class TrainingSpot(Place):
                                 enoughStuff=False
                                 print("You don't have enough [ %s ].\n"
                                       "Required: %s\n"
-                                      "Your inventory: %s"%(univ.ListOfItems[item].name, reqMats[item],player.inventory[item]))
+                                      "Your inventory: %s"%(univ.ListOfItems[item].name, self.reqMats[item],player.inventory[item]))
                                 return (player,displayPlaces)
                         if enoughStuff:
                             success=False# dropper(player,self.loottable)
@@ -249,12 +257,12 @@ class TrainingSpot(Place):
                                     print(self.successline(player,item))
                                     print("You gained [ %s ] %s experience. "%(univ.ListOfItems[item].exp,self.skill))
                                     break
+                            if not success:
+                                print(self.failline)
                             for item in self.reqMats:
                                 player.inventory[item] -= self.reqMats[item]
                                 print("You have [ %s ] %s remaining."%(player.inventory[item],univ.ListOfItems[item].name))
                             player.save()
-                            if not success:
-                                print(self.failline)
                     elif choice in univ.no:
                         return (player,displayPlaces)
                     else: univ.error(0)

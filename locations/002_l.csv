@@ -1,3 +1,3 @@
-code,name,desc,type,introline,exitline
-l0021,shoppa,A shop.,shop,hello!,bye!
-l0022,bakera,A bread shop.,shop,hi!,cya!
+code,name,desc,type,reqEquip,reqMats,min_lvl,buy_stock,sell_stock,IntroLine,ExitLine,currency
+l0021,Lake,A nice lake.,FishSpot,[],[i00000:1],0
+l0022,Advanced Store,A more advanced fishing store.,shop,,,,[i01001;i01002;i01003;i01004;i01005;i01006],[i02001;i02002;i02003;i02004],Hi!,Cya!,i00001

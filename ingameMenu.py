@@ -9,7 +9,9 @@ def menu(player):
         for key in menu_options:
             print(str(key)+". "+menu_options[key][0])
         print("\nEnter the corresponding number:\n")
-        choice = univ.IntChoice(len(menu_options),[],[0])
+        choice = univ.IntChoice(len(menu_options),['x'],[0])
+        if choice=='x':
+            return (player,"prev")
         var = menu_options[choice][1](player)
         if var:
             return var
@@ -18,6 +20,7 @@ def disp_inv(player):
     print("\n~~~YOUR INVENTORY~~~\n")
     for key in player.inventory:
         print(univ.ListOfItems[key].name +": " + str(player.inventory[key]))
+        print("   "+univ.ListOfItems[key].desc)
 
 def disp_position(player):
     from gamemap import Locations

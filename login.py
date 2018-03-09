@@ -33,7 +33,7 @@ def new_acct():
                     print ('Please enter a password longer than 3 characters.')
                 else:
                     pwconfirm = hashlib.sha256(getpass.getpass("Confirm password.\n>> ").encode('utf-8')).hexdigest()
-                    if pw == pwconfirm
+                    if pw == pwconfirm:
                         stats['password'] = pw #change this to write hash of password: import hashlib, find out how this works
                         json.dump(stats, playerfile)
                         print ('Password confirmed, please log in to your account.')

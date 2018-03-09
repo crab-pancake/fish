@@ -19,17 +19,15 @@ def displayPlaces(player):
                 print("Quitting...")
                 return (player, quit)
             elif choice == 'm':
-                action = ingameMenu.menu(player)
-                # return (player, action)
+                return ingameMenu.menu(player)
             else: 
-                return (player, pos.places[choice][1].takeaction)
+                return (player,pos.places[choice][1].takeaction)
 
 def travel(player):
     with Locations[player.position] as pos:
         print("You are leaving %s."%(pos.name))
         traveller = {0:'Return'}
         print('Type the number of the town you want to travel to.')
-        i=1
         for num, location in enumerate(sorted(pos.destinations),1):
             traveller[num] = Locations[location.strip()].name
             print(num,Locations[location.strip()].name)
@@ -69,13 +67,11 @@ class Location(object):
         self.places = {0:('Leave', travel)}
         with open('./locations/'+self.code+'_l.csv', 'r') as file:
             reader = csv.DictReader(file)
-            i=1
-            for row in reader:
+            for num,row in enumerate(reader,1):
                 if row['type'] == 'shop':
-                    self.places[i] = (row['name'], Shop(**row))
+                    self.places[num] = (row['name'], Shop(**row))
                 elif row['type'] == 'FishSpot':
-                    self.places[i] = (row['name'], FishSpot(**row))
-                i+=1
+                    self.places[num] = (row['name'], FishSpot(**row))
         self.destinations = travelling.split(';')
     def __enter__(self):
         return self

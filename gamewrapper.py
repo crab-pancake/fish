@@ -6,9 +6,12 @@ def mover(player):
     nextAction = gmap.displayPlaces
     while True:
         returned = nextAction(player) # returned will be a tuple of (playerObject, player'sNextAction)
-        player = returned[0]
-        prevAction=nextAction
-        nextAction = returned[1]
+        if returned==None:
+            nextAction='prev'
+        else:
+            player = returned[0]
+            prevAction=nextAction
+            nextAction = returned[1]
         player.save()
         if nextAction == None:
             break
@@ -22,6 +25,8 @@ def start_acct(uname):
     with open('./PlayerAccts/'+uname+'_p.json', 'r') as file:
         reader = json.load(file) # This returns a dictionary with all the information in it. 
         player = univ.Player(**reader)
+        from moderating import update
+        update(uname)
         if player.lastlogin == 0: # If this is the first access of the game, then ptimeraw == 0
             print('running first mode') #for debug purposes
             player.updatetime()

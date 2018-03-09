@@ -34,13 +34,12 @@ def other_info(player):
         "\nExperience: %s"%(time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.createtime)),time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.lastlogin)),player.exp['fishing']))
 
 def save(player):
-    print('saved')
     player.save()
+    print('saved')
 
 def exit(player):
-    print("\nExiting program...")
-    import gamemap
-    return (player,gamemap.quit)
+    from gamemap import quit
+    return (player,quit)
 
 def help_(player):
     print("""\n~~~HELP~~~

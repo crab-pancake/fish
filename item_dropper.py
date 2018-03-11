@@ -46,9 +46,9 @@ def drop_egg(skill):
                 total_denominator_t += inc_denominator_t
                 if var <= total_denominator_t:
                     pokestats = {
-                    1:["Attack",0,""],
-                    2:["Defence",0,""],
-                    3:["Stamina",0,""]
+                    1:["Attack",0],
+                    2:["Defence",0],
+                    3:["Stamina",0]
                     }
                     comments = ""
                     for b in range (1,3+1):
@@ -61,5 +61,5 @@ def drop_egg(skill):
                     break
 
 if __name__ == '__main__':
-    # drop_item(fishing_drop, 1.02, 10, 0.08, 0.09, 0.9)
-    drop_egg(egg_drop)
+    drop_item(fishing_drop, 1.02, 10, 0.08, 0.09, 0.9)
+    # drop_egg(egg_drop)

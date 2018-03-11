@@ -1,20 +1,28 @@
 import random as rand
 
 fishing_drop ={
-1:["Treasure Chest", "Native pearl", "Tetrodotoxin cube", "Hapalochleana egg"],
+1:["Treasure Chest", "Native pearl", "Tetrodotoxin cubes", "Hapalochleana egg"],
 2:["Gummy sharkling", "Electric eel", "Flounder", "Magikarp", "Feebas"],
 3:["Pufferfish", "Mackerel", "Shrimp", "Snapper", "Bass"]
 }
 
 rarity = [
-"Common",
-"Uncommon",
-"Rare",
-"Ultra rare",
-"Unbelievably rare"
+("Unbelievably rare",1),
+("Ultra rare",2),
+("Rare",4),
+("Uncommon",8),
+("Common",16),
 ]
 
-def drop_item(skill, drop_mod, *bound):
+egg_drop = {
+1: ["Wynaut"],
+2: ["Azurill"],
+3: ["Makuhita", "Mudkip", "Torchic", "Treecko", "Shroomish", "Slakoth"],
+4: ["Skitty", "Ralts", "Seedot"],
+5: ["Gulpin", "Poochyena", "Spoink", "Wurmple", "Zigzagoon"]
+}
+
+def drop_item(skill, modifier, level, *bound):
     while True:
         fish = input("Would you like to fish?")
         if fish == 'y':    
@@ -24,5 +32,28 @@ def drop_item(skill, drop_mod, *bound):
                     print("You got a %s. This is a %s item."  % (rand.choice(skill[a]), rarity[len(bound)-a].lower()))
                     break
 
+def drop_egg(skill):
+    while True:
+        collect = input("How many eggs would you like to collect? [Note: This is the Hoenn egg update only.]\n >>")
+        for d in range(int(collect)):
+            total_denominator = 0
+            for a in range(0,len(skill)):
+                total_denominator += rarity[a][1] * len(skill[a+1]) 
+            var = rand.randint(1,total_denominator)
+            total_denominator_t = 0
+            for a in range(0,len(skill)):
+                inc_denominator_t = rarity[a][1] * len(skill[a+1])
+                total_denominator_t += inc_denominator_t
+                if var <= total_denominator_t:
+                    print("You collected a %s egg. This is a %s type of egg. It's stats are %s/%s/%s." % (rand.choice(skill[a+1]), rarity[a][0].lower(), rand.randint(10,15), rand.randint(10,15), rand.randint(10,15)))
+                    break
+        # if fish == 'y':    
+        #     var = rand.random()
+        #     for a in range (1,len(bound)+1):
+        #         if var <= sum(bound[:a]):
+        #             print("You got a %s. This is a %s item."  % (rand.choice(skill[a]), rarity[len(bound)-a].lower()))
+        #             break
+
 if __name__ == '__main__':
-    drop_item(fishing_drop, 1, 0.08, 0.09, 0.9)
+    # drop_item(fishing_drop, 1.02, 10, 0.08, 0.09, 0.9)
+    drop_egg(egg_drop)

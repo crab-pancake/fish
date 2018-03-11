@@ -45,14 +45,20 @@ def drop_egg(skill):
                 inc_denominator_t = rarity[a][1] * len(skill[a+1])
                 total_denominator_t += inc_denominator_t
                 if var <= total_denominator_t:
-                    print("You collected a %s egg. This is a %s type of egg. It's stats are %s/%s/%s." % (rand.choice(skill[a+1]), rarity[a][0].lower(), rand.randint(10,15), rand.randint(10,15), rand.randint(10,15)))
+                    pokestats = {
+                    1:["Attack",0,""],
+                    2:["Defence",0,""],
+                    3:["Stamina",0,""]
+                    }
+                    comments = ""
+                    for b in range (1,3+1):
+                        pokestats[b][1] = rand.randint(10,15)
+                        if pokestats[b][1] == 15:
+                            comments += ("Perfect stat in " + pokestats[b][0].lower()+". ")
+                        if pokestats[1][1] == pokestats [2][1] == pokestats [3][1] == 15:
+                            comments +=  ("THIS IS A PERFECT POKEMON. DO NOT TRANSFER TO NAZI WILLOW!!")
+                    print("You collected a %s egg, a %s type of egg. Its stats are %s/%s/%s. %s" % (rand.choice(skill[a+1]), rarity[a][0].lower(), pokestats[1][1], pokestats[2][1], pokestats[3][1], comments))
                     break
-        # if fish == 'y':    
-        #     var = rand.random()
-        #     for a in range (1,len(bound)+1):
-        #         if var <= sum(bound[:a]):
-        #             print("You got a %s. This is a %s item."  % (rand.choice(skill[a]), rarity[len(bound)-a].lower()))
-        #             break
 
 if __name__ == '__main__':
     # drop_item(fishing_drop, 1.02, 10, 0.08, 0.09, 0.9)

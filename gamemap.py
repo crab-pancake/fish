@@ -212,7 +212,7 @@ class TrainingSpot(Place):
         self.skill=skill
         self.reqEquip=reqEquip
         self.reqMats={k:int(v) for k,v in (i.split(':') for i in reqMats.strip("[]").split(';'))} #Get a string of form [k1:v1;k2:v2] and turn it into a dict
-        self.loottable='./tables/'+code+'_t.csv'
+        self.loottable='./locations/'+code+'_t.csv'
         self.failline=failline
         self.action=action
         self.actions.update({1:(self.action.title()+"!", self.TrainSkill)})

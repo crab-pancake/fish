@@ -1,4 +1,6 @@
 import random as rand
+import json
+import universals as univ
 
 fishing_drop ={
 1:["Treasure Chest", "Native pearl", "Tetrodotoxin cubes", "Hapalochleana egg"],
@@ -21,6 +23,49 @@ egg_drop = {
 4: ["Skitty", "Ralts", "Seedot"],
 5: ["Gulpin", "Poochyena", "Spoink", "Wurmple", "Zigzagoon"]
 }
+
+def load(level):
+    while True:
+        collect = input("How many times would you like to fish?\n >>")
+        for d in range(int(collect)):     
+            with open('./Locations/l0023_t.json', 'r') as file:
+                loaded = json.load(file)
+            length = len(loaded["items"])
+            #create an empty 'pool'. The pool will be the items available to be received based upon the location (JSON) as well as the patient's level
+            pool = []
+            rarity_pool = 0
+            for a in range(0,length):
+                itemnamecode = loaded["items"][a]["code"]
+                dog = univ.ListOfItems[itemnamecode]
+                if level >= int(dog.h2): #Adds 'item' to the pool if the player's level is greater than 'h2' (placeholder for minimum level required. Found in allitems_m.csv)
+                    pool.append(itemnamecode)
+                    ## print("Your level of %s is sufficient that %s has been included in the pool (a level of %s is required)." % (level, dog.name, dog.h2))
+                if level < int(dog.h2):
+                    pass
+                    ##print("Insufficient level. %s excluded." % (dog.name))
+
+            #Using the 'pool' of items, we calculate the probability of each item dropping. This is based upon the rarity value provided in the location JSON file, with a rarity of 0 being guaranteed, and higher rarities being progresively rare
+            pool_weights= {}    
+            for b in range (0,len(pool)):
+                for c in range (0, length):
+                    if pool[b] == loaded["items"][c]["code"]:
+                        rarity_pool += 2**(5 - loaded["items"][c]["rarity"])
+                        pool_weights[pool[b]] = 2**(5 - loaded["items"][c]["rarity"])
+            
+            #Now 'regularise' the rarity pool, by assigning a probability to each item (i.e. a float from 0 to 1)
+            for b in range (0,len(pool)):
+                    pool_weights[pool[b]] = pool_weights[pool[b]]/rarity_pool
+
+            #This final bit randomly selects the fish that is caught (based upon the weight given in the pool_weights dictionary).
+            var = rand.random()
+            ##print("Variable =" + str(var))
+            s = 0
+            for key in pool_weights:
+                s += pool_weights[key]
+                if s> var:
+                    success = univ.ListOfItems[key]
+                    print("You caught a %s. This has a %s catch rate for you at level %s." % (success.name, format(pool_weights[key],'.2f'), level))
+                    break
 
 def drop_item(skill, modifier, level, *bound):
     while True:
@@ -61,5 +106,6 @@ def drop_egg(skill):
                     break
 
 if __name__ == '__main__':
-    drop_item(fishing_drop, 1.02, 10, 0.08, 0.09, 0.9)
+    load(40)
+    # drop_item(fishing_drop, 1.02, 10, 0.08, 0.09, 0.9)
     # drop_egg(egg_drop)

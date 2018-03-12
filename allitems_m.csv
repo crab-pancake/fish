@@ -1,13 +1,13 @@
-code,name,desc,exp,h1,sale_p,buy_p,h2,h3,i_type
-i00000,Fishing Juice,A unit of fishing juice,0,0,0,0,0,0,bait
-i00001,Gold Pieces,Shiny pieces of gold,0,0,0,0,0,0,misc
-i01001,Mackerel,A fishy,1,1,3,0,0,0,fish
-i01002,Cockle,A shellfishy,2,2,4,0,0,0,fish
-i01003,Shiny Magikarp,A golden fishy,5,5,99,0,0,0,fish
-i01004,Trout,Bear food,7,7,7,0,0,0,fish
-i01005,Salmon,Not to be used for PK-ing,9,10,8,0,0,0,fish
-i01006,Tuna,Harpoons are good,11,13,10,0,0,0,fish
-i02001,Basic Net,Basic Net,0,1,0,10,0,0,equipment
-i02002,Drift Net,Drift Net,0,5,0,25,0,0,equipment
-i02003,Cast Net,CastaNets,0,10,0,100,0,0,equipment
-i02004,Purse Seine,Probably not practical,0,20,0,1000,0,0,equipment
+code,iType,exp,minlvl,accept,vend,h1,h2,name,desc
+i00000,bait,0000,000,00000,00000,0,0,Fishing Juice,A unit of fishing juice
+i00001,misc,0000,000,00000,00000,0,0,Gold Pieces,Shiny pieces of gold
+i01001,fish,0001,001,00003,00000,0,0,Mackerel,A fishy
+i01002,fish,0002,002,00004,00000,0,0,Cockle,A shellfishy
+i01003,fish,0005,005,00099,00000,0,0,Shiny Magikarp,A golden fishy
+i01004,fish,0007,007,00007,00000,0,0,Trout,Bear food
+i01005,fish,0009,010,00008,00000,0,0,Salmon,Not to be used for PK-ing
+i01006,fish,0011,013,00010,00000,0,0,Tuna,Harpoons are good
+i02001,eqpt,0000,001,00000,00010,0,0,Basic Net,Basic Net
+i02002,eqpt,0000,005,00000,00025,0,0,Drift Net,Drift Net
+i02003,eqpt,0000,010,00000,00100,0,0,Cast Net,CastaNets
+i02004,eqpt,0000,020,00000,01000,0,0,Purse Seine,Probably not practical

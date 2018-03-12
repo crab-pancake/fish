@@ -1,4 +1,4 @@
-code,iType,exp,minlvl,accept,vend,h1,h2,name,desc
+code,iType,exp,minlvl,acceptP,vendP,h1,h2,name,desc
 i00000,bait,0000,000,00000,00000,0,0,Fishing Juice,A unit of fishing juice
 i00001,misc,0000,000,00000,00000,0,0,Gold Pieces,Shiny pieces of gold
 i01001,fish,0001,001,00003,00000,0,0,Mackerel,A fishy

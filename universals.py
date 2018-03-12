@@ -4,15 +4,13 @@ import json
 
 class Item(object):
     """items"""
-    def __init__(self, code, name, desc, exp, sale_p, buy_p, h2, h3,**kwargs):
+    def __init__(self,code,name,desc,exp,acceptP,vendP,**kwargs):
         self.code = code
         self.name = name
         self.desc = desc
         self.exp = int(exp)
-        self.sale_p = int(sale_p)
-        self.buy_p = int(buy_p)
-        self.h2 = h2
-        self.h3 = h3
+        self.acceptP = int(acceptP) # shop buys from player
+        self.vendP = int(vendP) # shop sells to player
         self.type = 'other'
     def __str__(self):
         return "Item with code %s, name %s" % (self.code, self.name)
@@ -24,17 +22,18 @@ class Item(object):
         pass
 
 class Fish(Item):
-    def __init__(self,code,name,desc,exp,h1,sale_p,buy_p,h2,h3,**kwargs):
-        super().__init__(code,name,desc,exp,sale_p,buy_p,h2,h3)
+    def __init__(self,code,name,desc,exp,acceptP,vendP,minlvl,**kwargs):
+        super().__init__(code,name,desc,exp,acceptP,vendP,**kwargs)
         self.type = 'fish'
+        self.min_lvl=minlvl
     def __str__(self):
         return "Fish item with code %s, name %s" % (self.code, self.name)
     def __repr__(self):
         return "Fish(%r, %r, %r, %r)" % (self.code, self.name, self.desc, self.exp)
 
 class Bait(Item):
-    def __init__(self,code,name,desc,exp,h1,sale_p,buy_p,h2,h3,**kwargs):
-        super().__init__(code,name,desc,exp,sale_p,buy_p,h2,h3)
+    def __init__(self,code,name,desc,exp,acceptP,vendP,**kwargs):
+        super().__init__(code,name,desc,exp,acceptP,vendP)
         self.type = 'bait'
     def __str__(self):
         return "Bait item with code %s, name %s" % (self.code, self.name)
@@ -42,8 +41,8 @@ class Bait(Item):
         return "Bait(%r, %r, %r, %r)" % (self.code, self.name, self.desc, self.exp)
 
 class Material(Item):
-    def __init__(self,code,name,desc,exp,h1,sale_p,buy_p,h2,h3,**kwargs):
-        super().__init__(code,name,desc,exp,sale_p,buy_p,h2,h3)
+    def __init__(self,code,name,desc,exp,acceptP,vendP,**kwargs):
+        super().__init__(code,name,desc,exp,acceptP,vendP,**kwargs)
         self.type = 'material'
     def __str__(self):
         return "Material item with code %s, name %s" % (self.code, self.name)
@@ -54,10 +53,10 @@ ListOfItems = {}
 with open('allitems_m.csv', 'r') as readfile:
     reader = csv.DictReader(readfile)
     for row in reader:
-        if row['i_type'] == 'fish':
+        if row['iType'] == 'fish':
             ThisItem = Fish(**row)
             ListOfItems[ThisItem.code] = ThisItem
-        elif row['i_type'] == 'bait':
+        elif row['iType'] == 'bait':
             ThisItem = Bait(**row)
             ListOfItems[ThisItem.code] = ThisItem
         else:
@@ -71,6 +70,8 @@ class Player(object):
         self.createtime = createtime
         self.lastlogin = lastlogin
         self.exp = exp
+        for skill in skills:
+            self.exp[skill]=exp.get(skill,0)
         self.inventory={}
         for item in ListOfItems.keys():
             self.inventory[item]=inventory.get(item, 0)
@@ -93,7 +94,7 @@ class Player(object):
         with open('./PlayerAccts/'+self.username+'_p.json', 'w') as file:
             json.dump(stats, file)
     def disp_currency(self, currency):
-        print("You now have %s %s." % (self.inventory[currency],ListOfItems[currency].name))
+        print("You have %s %s." % (self.inventory[currency],ListOfItems[currency].name))
     def help_display(self):
         print("HELP\n")
     def relog(player):
@@ -113,7 +114,7 @@ def error(number):
     print ("Error %s: That is invalid. Try again." % (number)) 
 
 yes = ['yes','y','ya','ye','1','True']
-no = ['no','na','n','0','False']
+no = ['no','na','n','0','False','nah','nope']
 skills = ['fishing']
 
 def IntChoice(maxvalue,globalexcept,localexcept):
@@ -137,4 +138,4 @@ def updateDict(adict,actions,localexcept):
         adict[length+1]=item
         length+=1
 
-# exptable = {10x^2 for x in range(1,1000)}
+# exptable = {10x^2 for x in range(1,1000)}y=15x^{2.4}+42

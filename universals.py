@@ -1,66 +1,20 @@
 import csv
 import time
 import json
-
-class Item(object):
-    """items"""
-    def __init__(self,code,name,desc,exp,acceptP,vendP,**kwargs):
-        self.code = code
-        self.name = name
-        self.desc = desc
-        self.exp = int(exp)
-        self.acceptP = int(acceptP) # shop buys from player
-        self.vendP = int(vendP) # shop sells to player
-        self.type = 'other'
-    def __str__(self):
-        return "Item with code %s, name %s" % (self.code, self.name)
-    def __repr__(self):
-        return "Item(%r, %r, %r, %r)" % (self.code, self.name, self.desc, self.exp)
-    def __enter__(self):
-        return self
-    def __exit__(self, *args):
-        pass
-
-class Fish(Item):
-    def __init__(self,code,name,desc,exp,acceptP,vendP,minlvl,**kwargs):
-        super().__init__(code,name,desc,exp,acceptP,vendP,**kwargs)
-        self.type = 'fish'
-        self.min_lvl=minlvl
-    def __str__(self):
-        return "Fish item with code %s, name %s" % (self.code, self.name)
-    def __repr__(self):
-        return "Fish(%r, %r, %r, %r)" % (self.code, self.name, self.desc, self.exp)
-
-class Bait(Item):
-    def __init__(self,code,name,desc,exp,acceptP,vendP,**kwargs):
-        super().__init__(code,name,desc,exp,acceptP,vendP)
-        self.type = 'bait'
-    def __str__(self):
-        return "Bait item with code %s, name %s" % (self.code, self.name)
-    def __repr__(self):
-        return "Bait(%r, %r, %r, %r)" % (self.code, self.name, self.desc, self.exp)
-
-class Material(Item):
-    def __init__(self,code,name,desc,exp,acceptP,vendP,**kwargs):
-        super().__init__(code,name,desc,exp,acceptP,vendP,**kwargs)
-        self.type = 'material'
-    def __str__(self):
-        return "Material item with code %s, name %s" % (self.code, self.name)
-    def __repr__(self):
-        return "Material(%r, %r, %r, %r)" % (self.code, self.name, self.desc, self.exp)
+import itemClasses as ic
 
 ListOfItems = {}
 with open('allitems_m.csv', 'r') as readfile:
     reader = csv.DictReader(readfile)
     for row in reader:
         if row['iType'] == 'fish':
-            ThisItem = Fish(**row)
+            ThisItem = ic.Fish(**row)
             ListOfItems[ThisItem.code] = ThisItem
         elif row['iType'] == 'bait':
-            ThisItem = Bait(**row)
+            ThisItem = ic.Bait(**row)
             ListOfItems[ThisItem.code] = ThisItem
         else:
-            ThisItem = Item(**row)
+            ThisItem = ic.Item(**row)
         ListOfItems[ThisItem.code] = ThisItem
 
 class Player(object):
@@ -97,10 +51,32 @@ class Player(object):
         print("You have %s %s." % (self.inventory[currency],ListOfItems[currency].name))
     def help_display(self):
         print("HELP\n")
-    def relog(player):
-        for item in player.equipment.items():
+    def relog(self):
+        for item in self.equipment.items():
             print(ListOfItems[item].name)
-        player.inventory['i00000']+=int(player.hsll)
+        self.inventory['i00000']+=int(self.hsll)
+    def equip(self,item):
+        try:
+            if item.slot: # if !=0
+                if self.equipment[item.slot]: #if the slot is currently full, remove the item currently in there
+                    confirm=input("Do you want to unequip %s and equip %s instead?"
+                        %(ListOfItems[self.equipment[item.slot]].name,ListOfItems[item.code].name))
+                    if confirm in yes:
+                        self.inventory[self.equipment[item.slot]]+=1
+                        print("Returned %s back to inventory."%ListOfItems[self.equipment[item.slot]].name)
+                        self.inventory[item.code]-=1
+                        self.equipment[item.slot]=item.code
+                        print("Equipped %s"%ListOfItems[item.code].name)
+                    else:
+                        pass
+                else:
+                    self.inventory[item.code]-=1
+                    self.equipment[item.slot]=item.code
+                    print("Equipped %s"%ListOfItems[item.code].name)
+            else:
+                print("This item cannot be equipped.")
+        except KeyError as e:
+            raise e
     def inv_display(self): 
         print("YOUR INVENTORY:\n-------------------------")
         for key in self.inventory:

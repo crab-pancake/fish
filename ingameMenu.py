@@ -3,7 +3,7 @@ import json
 import time
 
 def menu(player):
-    menu_options = {1:("Display Inventory",disp_inv),2:("Display Position",disp_position),3:("Other Info",other_info),4:("Save",save),5:("Return to game",return_), 6:("Help", help_), 0:("Exit Game",exit)}
+    menu_options = {1:("Display Inventory",disp_inv),2:("Display Position",disp_pos),3:("Other Info",info),4:("Save",save),5:("Back to game",back),6:("Help", helptext),7:("Equipment",eqptMenu),0:("Exit Game",exit)}
     while True:
         print("\n~~~MENU~~~\n")
         for key in menu_options:
@@ -22,12 +22,12 @@ def disp_inv(player):
         print(univ.ListOfItems[key].name +": " + str(player.inventory[key]))
         print("   "+univ.ListOfItems[key].desc)
 
-def disp_position(player):
+def disp_pos(player):
     from gamemap import Locations
     print("\n~~~YOUR POSITION~~~\n"
         "Position: "+Locations[player.position].name)
 
-def other_info(player):
+def info(player):
     print("\n~~~OTHER INFO~~~\n"
         "\nCreate Time: %s"
         "\nLast Login Time: %s"
@@ -39,9 +39,9 @@ def save(player):
 
 def exit(player):
     from gamemap import quit
-    return (player,quit)
+    return player,quit
 
-def help_(player):
+def helptext(player):
     print("""\n~~~HELP~~~
     ----------------------------
     History:
@@ -63,13 +63,39 @@ def help_(player):
     Final words:
     Good luck! We'll be slowly adding in extra features, but be patient as we are new :3""")
 
-def return_(player):
+def back(player):
     print("\nReturning to game...")
-    return (player,"prev")
+    return player,"prev"
+
+def eqptMenu(player):
+    while True:
+        print("\nCurrently equipped:")
+        for slot in player.equipment:
+            if player.equipment[slot]:
+                print("Slot %s: %s"%(slot,univ.ListOfItems[player.equipment[slot]].name))
+        print("\nEquipment in your inventory:")
+        alleqpt=[]
+        for item in player.inventory:
+            try:
+                if univ.ListOfItems[item].slot and player.inventory[item]:
+                    alleqpt.append(item)
+            except AttributeError as e:
+                pass
+        for num,item in enumerate(alleqpt,1):
+            print(num,univ.ListOfItems[item].name,player.inventory[item])
+        print("x Return")
+        print("Which item do you want to equip?")
+        choice=univ.IntChoice(len(alleqpt),["x"],[])
+        if choice=="x":
+            return
+        else:
+            player.equip(univ.ListOfItems[alleqpt[choice-1]])
+            player.save()
+
 
 if __name__ == "__main__":
     reader=''
     with open('./PlayerAccts/test_acct_p.json', 'r') as file:
         reader = json.load(file)
-    player = univ.Player(reader['username'], reader['password'], reader['createtime'], reader['lastlogin'], reader['exp'], reader['inventory'], reader['position'])
+    player = univ.Player(**reader)
     menu(player)

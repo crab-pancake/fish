@@ -4,32 +4,32 @@ import universals as univ
 import hashlib
 
 def prettyprint(filename):
-    with open('./PlayerAccts/'+filename+'_p.json', 'r') as file:
+    with open(filename+'.json', 'r') as file:
         parsed = json.load(file)
         print(json.dumps(parsed, indent=4, separators=(',', ': ')))
 
 def prettysave(filename):
-    with open('./PlayerAccts/'+filename+'_p.json', 'r') as file:
-        playerfile = json.load(file)
-    with open('./PlayerAccts/'+filename+'_p.json', 'w') as file:
-        json.dump(playerfile, file, indent=2, separators=(',', ': '))
+    with open(filename+'.json', 'r') as file:
+        parsed = json.load(file)
+    with open(filename+'.json', 'w') as file:
+        json.dump(parsed, file, indent=2, separators=(',', ': '))
+    print('Saved prettily')
 
 def update(username):
     with open('./PlayerAccts/%s_p.json'%(username), 'r') as file:
-        rdr = json.load(file)
+        reader = json.load(file)
         try:
-            rdr['createtime']=int(rdr['create time'])
-            rdr['lastlogin']=int(rdr['last login'])
+            reader['createtime']=int(reader['create time'])
+            reader['lastlogin']=int(reader['last login'])
         except KeyError:
-            rdr['createtime']=int(rdr['createtime'])
-            rdr['lastlogin']=int(rdr['lastlogin'])
-        if len(rdr['password'])!=64:
-            rdr['password']=hashlib.sha256(rdr['password'].encode('utf-8')).hexdigest()
+            reader['createtime']=int(reader['createtime'])
+            reader['lastlogin']=int(reader['lastlogin'])
         try:
-            rdr['equipment']
+            if not reader['equipment']:
+                reader['equipment']=dict.fromkeys(range(1,10),None)
         except KeyError:
-            rdr['equipment']={}
-        player = univ.Player(rdr['username'],rdr['password'],rdr['createtime'],rdr['lastlogin'],rdr['exp'],rdr['inventory'],rdr['position'],rdr['equipment'])
+            reader['equipment']=dict.fromkeys(range(1,10),None)
+        player = univ.Player(**reader)
         newdict = {}
         for key in player.inventory:
             if key[0] == 'i':
@@ -41,11 +41,10 @@ def update(username):
         player.inventory=newdict
         for skill in univ.skills:
             player.exp[skill] = player.exp.get(skill, 0)
+        if len(player.password)!=64:
+            player.password=hashlib.sha256(player.password.encode('utf-8')).hexdigest()
         if len(player.position)!=3:
             player.position='000'
         player.save()
     print("Account updated.")
-
-if __name__ == "__main__":
-    while True:
-        exec(input(">>> "))
+t='test_acct'

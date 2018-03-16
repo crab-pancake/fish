@@ -13,6 +13,9 @@ with open('allitems_m.csv', 'r') as readfile:
         elif row['iType'] == 'bait':
             ThisItem = ic.Bait(**row)
             ListOfItems[ThisItem.code] = ThisItem
+        elif row['iType'] == 'eqpt':
+            ThisItem = ic.Equipment(**row)
+            ListOfItems[ThisItem.code] = ThisItem
         else:
             ThisItem = ic.Item(**row)
         ListOfItems[ThisItem.code] = ThisItem
@@ -59,20 +62,21 @@ class Player(object):
         try:
             if item.slot: # if !=0
                 if self.equipment[item.slot]: #if the slot is currently full, remove the item currently in there
-                    confirm=input("Do you want to unequip %s and equip %s instead?"
-                        %(ListOfItems[self.equipment[item.slot]].name,ListOfItems[item.code].name))
-                    if confirm in yes:
-                        self.inventory[self.equipment[item.slot]]+=1
-                        print("Returned %s back to inventory."%ListOfItems[self.equipment[item.slot]].name)
-                        self.inventory[item.code]-=1
-                        self.equipment[item.slot]=item.code
-                        print("Equipped %s"%ListOfItems[item.code].name)
+                    if item.code!=self.equipment[item.slot]:
+                        confirm=input("Do you want to unequip %s and equip %s instead?\n>> "
+                            %(ListOfItems[self.equipment[item.slot]].name,ListOfItems[item.code].name)).strip().lower()
+                        if confirm in yes:
+                            self.inventory[self.equipment[item.slot]]+=1
+                            print("Returned %s back to inventory."%ListOfItems[self.equipment[item.slot]].name)
+                            self.inventory[item.code]-=1
+                            self.equipment[item.slot]=item.code
+                            print("Equipped %s."%ListOfItems[item.code].name)
                     else:
-                        pass
+                        print("You already have that item equipped.")
                 else:
                     self.inventory[item.code]-=1
                     self.equipment[item.slot]=item.code
-                    print("Equipped %s"%ListOfItems[item.code].name)
+                    print("Equipped %s."%ListOfItems[item.code].name)
             else:
                 print("This item cannot be equipped.")
         except KeyError as e:

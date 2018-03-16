@@ -21,7 +21,7 @@ class Fish(Item):
     def __init__(self,code,name,desc,exp,acceptP,vendP,minlvl,**kwargs):
         super().__init__(code,name,desc,exp,acceptP,vendP,**kwargs)
         self.type = 'fish'
-        self.minlvl=minlvl
+        self.minlvl=int(minlvl)
     def __str__(self):
         return "Fish item with code %s, name %s" % (self.code, self.name)
     def __repr__(self):
@@ -51,6 +51,6 @@ class Equipment(Item):
         self.type='equipment'
         self.slot=slot
     def __str__(self):
-        return "Material item with code %s, name %s" % (self.code, self.name)
+        return "Equipment item with code %s, name %s" % (self.code, self.name)
     def __repr__(self):
-        return "Material(%r, %r, %r, %r)" % (self.code, self.name, self.desc, self.exp)
+        return "Equipment(%r, %r, %r, %r)" % (self.code, self.name, self.desc, self.exp)

@@ -1,10 +1,10 @@
 {"items":
     [
-    {"code":"i01001", "amount":[1,2], "exp":[{"Fishing":3}], "rarity":1},
-	{"code":"i01002", "amount":[1], "exp":[{"Fishing":5}], "rarity":1},
-	{"code":"i01003", "amount":[1], "exp":[{"Fishing":10}], "rarity":5},
+    {"code":"i01001", "amount":[1,2], "exp":[{"Fishing":3}], "rarity":5},
+	{"code":"i01002", "amount":[1], "exp":[{"Fishing":5}], "rarity":5},
+	{"code":"i01003", "amount":[1], "exp":[{"Fishing":10}], "rarity":1},
 	{"code":"i01004", "amount":[1], "exp":[{"Fishing":3}], "rarity":3},
-	{"code":"i01005", "amount":[1], "exp":[{"Fishing":3}], "rarity":2},
-	{"code":"i01006", "amount":[1], "exp":[{"Fishing":3}], "rarity":2}
+	{"code":"i01005", "amount":[1], "exp":[{"Fishing":3}], "rarity":4},
+	{"code":"i01006", "amount":[1], "exp":[{"Fishing":3}], "rarity":4}
     ]
 }

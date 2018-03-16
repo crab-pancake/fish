@@ -33,7 +33,7 @@ def load(player):
     #Load up items suitable for the player's level
     for a in range(0,len(reader)):
         itemnamecode = reader[a]["code"]
-        if level >= int(univ.ListOfItems[itemnamecode].min_lvl): #Adds 'item' to the pool if the player's level is greater than 'min_lvl' Found in allitems_m.csv)
+        if level >= int(univ.ListOfItems[itemnamecode].minlvl): #Adds 'item' to the pool if the player's level is greater than 'min_lvl' Found in allitems_m.csv)
             DropTable[reader[a]["rarity"]].append(itemnamecode)
 
     collect = int(input("How many times would you like to fish?\n>> "))

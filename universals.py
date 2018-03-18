@@ -55,7 +55,7 @@ class Player(object):
     def help_display(self):
         print("HELP\n")
     def relog(self):
-        for item in self.equipment.items():
+        for slot,item in self.equipment.items():
             print(ListOfItems[item].name)
         self.inventory['i00000']+=int(self.hsll)
     def equip(self,item):

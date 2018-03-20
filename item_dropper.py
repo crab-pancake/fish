@@ -37,14 +37,9 @@ def load(player):
             DropTable[reader[a]["rarity"]].append(itemnamecode)
 
     print("How many times would you like to fish? You have %s fishing juice." %(player.inventory["i00000"]))
-    collect = univ.IntChoice(player.inventory["i00000"], ['x','m', 'q'],[0])
+    collect = univ.IntChoice(player.inventory["i00000"], ['x'],[0])
     if collect == 'x' or collect == 0:
-        return (player, travel)
-    elif collect == 'q':
-        print("Quitting...")
-        return (player, quit)
-    elif collect == 'm':
-        return ingameMenu.menu(player)
+        return
     else:   
         while collect>0:
             collect-=1
@@ -68,8 +63,9 @@ def load(player):
             chosen_item = rand.choice(DropTable[chosen_rarity])
             chosen_item_name = univ.ListOfItems[chosen_item].name
             player.inventory[chosen_item]+=1
-            player.save()   
             print("You have successfully fished a %s. This is a [%s] item.You have %s %s." % (chosen_item_name, rarity_new[chosen_rarity-1][0], player.inventory[chosen_item], chosen_item_name))
+    player.save()   
+
 
 if __name__ == '__main__':
     reader=''

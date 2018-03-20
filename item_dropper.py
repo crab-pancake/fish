@@ -37,7 +37,7 @@ def load(player):
             DropTable[reader[a]["rarity"]].append(itemnamecode)
 
     print("How many times would you like to fish? You have %s fishing juice." %(player.inventory["i00000"]))
-    collect = univ.IntChoice(player.inventory["i00000"], ['x'],[0])
+    collect = univ.IntChoice(player.inventory["i00000"]+1, ['x'],[0])
     if collect == 'x' or collect == 0:
         return
     else:   

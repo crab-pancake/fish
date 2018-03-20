@@ -1,3 +1,3 @@
-code,name,desc,buy_stock,sell_stock,introline,exitline
-l0021,General Store,The basic fishing store.,i01001;i01002;i01003;i01004;i01005;i01006,i02001;i02002;i02003,Hello! Press 'b' to buy and 's' to sell. Or press 'x' to escape.,Bye!
-l0022,Advanced Store,A more advanced fishing store.,i01001;i01002;i01003;i01004;i01005;i01006,i02001;i02002;i02003;i02004,Hi!,Cya!
+code,name,desc,type,reqEquip,reqMats,min_lvl,buy_stock,sell_stock,IntroLine,ExitLine,currency
+l0021,General Store,The basic fishing store.,shop,,,,[i01001;i01002;i01003;i01004;i01005;i01006],[i02001;i02002;i02003],Hello! Press 'b' to buy and 's' to sell. Or press 'x' to escape.,Bye!,i00001
+l0022,Advanced Store,A more advanced fishing store.,shop,,,,[i01001;i01002;i01003;i01004;i01005;i01006],[i02001;i02002;i02003;i02004],Hi!,Cya!,i00001

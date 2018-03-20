@@ -46,7 +46,7 @@ def helptext(player):
     ----------------------------
     History:
     Jerry and Dayu thought of this game as they were walking with Evan and Mummy, along Lake Nordenskjoeld, W-Trek, Patagonia, Chile in late December 2017. 
-    The inspiration came from many hours of idle chat, but at least it encouraged them to do somethiing productive!
+    The inspiration came from many hours of idle chat, but at least it encouraged them to do something productive!
 
     Aim:
     This is a time based game, where you as the player character gather 'fishing juice' to catch fish, upgrade your setup and further your fishing capabilities.

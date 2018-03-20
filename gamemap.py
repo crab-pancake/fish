@@ -4,6 +4,8 @@ import universals as univ
 import random
 import time
 import ingameMenu
+import item_dropper
+import universals as univ
 
 def displayPlaces(player):
     with Locations[player.position] as pos:
@@ -256,7 +258,7 @@ class TrainingSpot(Place):
             with open(self.loottable,'r') as file:
                 reader=dict(csv.reader(file))
                 while True:
-                    choice=input("Do you want to %s here? (Y/N)\n>> "%(self.action)).strip().lower()
+                    choice=input("Do you want to %s here? (Y/N) You have %s fishing juice remaining.\n>> "%(self.action, player.inventory["i00000"])).strip().lower()
                     if choice in univ.yes:
                         enoughStuff=True
                         for item in self.reqMats:
@@ -267,21 +269,22 @@ class TrainingSpot(Place):
                                       "Your inventory: %s"%(univ.ListOfItems[item].name, self.reqMats[item],player.inventory[item]))
                                 return (player,displayPlaces)
                         if enoughStuff:
-                            success=False# dropper(player,self.loottable)
-                            rng=random.randint(0,100)
-                            for item in reader:
-                                if rng>=int(reader[item]):
-                                    success=True
-                                    player.inventory[item]+=1
-                                    print(self.successline(player,item))
-                                    print("You gained [ %s ] %s experience. "%(univ.ListOfItems[item].exp,self.skill))
-                                    break
-                            if not success:
-                                print(self.failline)
-                            for item in self.reqMats:
-                                player.inventory[item] -= self.reqMats[item]
-                                print("You have [ %s ] %s remaining."%(player.inventory[item],univ.ListOfItems[item].name))
-                            player.save()
+                            item_dropper.load(player)
+                            # success=False# dropper(player,self.loottable)
+                            # rng=random.randint(0,100)
+                            # for item in reader:
+                            #     if rng>=int(reader[item]):
+                            #         success=True
+                            #         player.inventory[item]+=1
+                            #         print(self.successline(player,item))
+                            #         print("You gained [ %s ] %s experience. "%(univ.ListOfItems[item].exp,self.skill))
+                            #         break
+                            # if not success:
+                            #     print(self.failline)
+                            # for item in self.reqMats:
+                            #     player.inventory[item] -= self.reqMats[item]
+                            #     print("You have [ %s ] %s remaining."%(player.inventory[item],univ.ListOfItems[item].name))
+                            # player.save()
                     elif choice in univ.no:
                         return (player,displayPlaces)
                     else: univ.error(0)
@@ -295,6 +298,7 @@ class FishSpot(TrainingSpot):
         super().__init__(code,name,desc,self.skill,reqEquip,reqMats,min_lvl,self.failline,self.action)
         # self.weather = weather  # add this later
     def successline(self,player,item):
+        # print("%s %s %s %s %s" % (self.code,self.name,self.reqEquip,self.reqMats,self.min_lvl))
         return "You successfully caught a %s!\nYou now have %s %s."%(univ.ListOfItems[item].name,player.inventory[item],univ.ListOfItems[item].name)
 
 Locations = {}

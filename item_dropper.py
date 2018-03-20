@@ -36,36 +36,44 @@ def load(player):
         if level >= int(univ.ListOfItems[itemnamecode].minlvl): #Adds 'item' to the pool if the player's level is greater than 'min_lvl' Found in allitems_m.csv)
             DropTable[reader[a]["rarity"]].append(itemnamecode)
 
-    collect = int(input("How many times would you like to fish?\n>> "))
+    print("How many times would you like to fish? You have %s fishing juice." %(player.inventory["i00000"]))
+    collect = univ.IntChoice(player.inventory["i00000"], ['x','m', 'q'],[0])
+    if collect == 'x' or collect == 0:
+        return (player, travel)
+    elif collect == 'q':
+        print("Quitting...")
+        return (player, quit)
+    elif collect == 'm':
+        return ingameMenu.menu(player)
+    else:   
+        while collect>0:
+            collect-=1
+            player.inventory["i00000"] -=1
+            tier = 0
+            max_roll = (2**rarity_new[-1][1])-1
+            var = rand.randint(1,max_roll)
+            for a in range(len(rarity_new),0,-1): # Counts backwards from Common
+                if (max_roll - 2**(a-1)+1)<= var <= max_roll:
+                    # print("The succesful bound is (%s,%s)." % ((max_roll - 2**(a-1)+1), max_roll))
+                    # print("Success. %s corresponds to a %s item." % (var, rarity_new[a-1][0]))
+                    chosen_rarity = rarity_new[a-1][1]
+                    break
+                else:
+                    # print("The bounds were (%s,%s)." % ((max_roll - 2**(a-1)+1), max_roll))
+                    max_roll -= 2**(a-1)
 
-    while collect>0:
-        collect-=1
-        tier = 0
-        max_roll = (2**rarity_new[-1][1])-1
-        var = rand.randint(1,max_roll)
-        for a in range(len(rarity_new),0,-1): # Counts backwards from Common
-            if (max_roll - 2**(a-1)+1)<= var <= max_roll:
-                # print("The succesful bound is (%s,%s)." % ((max_roll - 2**(a-1)+1), max_roll))
-                # print("Success. %s corresponds to a %s item." % (var, rarity_new[a-1][0]))
-                chosen_rarity = rarity_new[a-1][1]
-                break
-            else:
-                # print("The bounds were (%s,%s)." % ((max_roll - 2**(a-1)+1), max_roll))
-                max_roll -= 2**(a-1)
+            while DropTable[chosen_rarity] == []:
+                chosen_rarity += 1
 
-        while DropTable[chosen_rarity] == []:
-            chosen_rarity += 1
-
-        chosen_item = rand.choice(DropTable[chosen_rarity])
-        chosen_item_name = univ.ListOfItems[chosen_item].name
-        player.inventory[chosen_item]+=1
-
-        print("You have successfully fished a %s. This is a [%s] item - corresponding to your variable rolled of [%s].You have %s %s." % (chosen_item_name, rarity_new[chosen_rarity-1][0], var, player.inventory[chosen_item], chosen_item_name))
-
+            chosen_item = rand.choice(DropTable[chosen_rarity])
+            chosen_item_name = univ.ListOfItems[chosen_item].name
+            player.inventory[chosen_item]+=1
+            player.save()   
+            print("You have successfully fished a %s. This is a [%s] item.You have %s %s." % (chosen_item_name, rarity_new[chosen_rarity-1][0], player.inventory[chosen_item], chosen_item_name))
 
 if __name__ == '__main__':
     reader=''
-    with open('./PlayerAccts/asdf_p.json', 'r') as file:
+    with open('./PlayerAccts/test_acct_p.json', 'r') as file:
         reader = json.load(file)
     player = univ.Player(**reader)
     while True:

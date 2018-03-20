@@ -1,4 +1,5 @@
 code,name,desc,travelling
-000,Town,A medium-sized town.,001;002
-001,Village,A small village.,000
-002,City,A large city with many sights to see.,000;001
+000,Pallet Town,A medium-sized town.,001
+001,Viridian City,A small village with an evil gym leader.,000;002;003
+002,Pewter City,A large city with many sights to see.,001
+003,Indigo Plateau, An elite training platform to challenge the finest.,001

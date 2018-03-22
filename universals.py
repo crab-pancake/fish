@@ -4,16 +4,16 @@ import json
 import itemClasses as ic
 
 ListOfItems = {}
-with open('allitems_m.csv', 'r') as readfile:
-    reader = csv.DictReader(readfile)
+with open('allitems_m.json', 'r') as file:
+    reader = json.load(file)
     for row in reader:
-        if row['iType'] == 'fish':
+        if row['iType'] == 'Fish':
             ThisItem = ic.Fish(**row)
             ListOfItems[ThisItem.code] = ThisItem
-        elif row['iType'] == 'bait':
+        elif row['iType'] == 'Bait':
             ThisItem = ic.Bait(**row)
             ListOfItems[ThisItem.code] = ThisItem
-        elif row['iType'] == 'eqpt':
+        elif row['iType'] == 'Equipment':
             ThisItem = ic.Equipment(**row)
             ListOfItems[ThisItem.code] = ThisItem
         else:
@@ -21,7 +21,7 @@ with open('allitems_m.csv', 'r') as readfile:
         ListOfItems[ThisItem.code] = ThisItem
 
 class Player(object):
-    def __init__(self, username, password, createtime, lastlogin, exp, inventory, position,equipment,*args):
+    def __init__(self,username,password,createtime,lastlogin,exp,inventory,position,equipment,*args):
         self.username = username
         self.password = password
         self.createtime = createtime
@@ -34,7 +34,7 @@ class Player(object):
             self.inventory[item]=inventory.get(item, 0)
         self.position = position
         self.hsll = (time.time() - float(lastlogin))/3600
-        self.equipment=equipment
+        self.equipment={int(k):v for k,v in sorted(equipment.items())}
     def updatetime(self):
         self.lastlogin = int(time.time())
     def save(self):
@@ -56,7 +56,8 @@ class Player(object):
         print("HELP\n")
     def relog(self):
         for slot,item in self.equipment.items():
-            print(ListOfItems[item].name)
+            if item:
+                print(ListOfItems[item].name)
         self.inventory['i00000']+=int(self.hsll)
     def equip(self,item):
         try:
@@ -81,10 +82,19 @@ class Player(object):
                 print("This item cannot be equipped.")
         except KeyError as e:
             raise e
+    def unequip(self,slot):
+        if self.equipment[slot]:
+            choice=input("Do you want to unequip your %s?\n>> "%ListOfItems[self.equipment[slot]].name).strip().lower()
+            if choice in yes:
+                self.inventory[self.equipment[slot]]+=1
+                print("Your %s has been unequipped. You now have an empty slot %s."%(ListOfItems[self.equipment[slot]].name,slot))
+                self.equipment[slot]=None
+        else:
+            print("You don't have anything equipped in that slot.")
     def inv_display(self): 
         print("YOUR INVENTORY:\n-------------------------")
         for key in self.inventory:
-            print('%s: %s' % (ListOfItems[key].name, self.inventory[key]))
+            print('%s: %s' % (ListOfItems[key].name.ljust(20), self.inventory[key]))
     def __enter__(self):
         return self
     def __exit__(self, *a):
@@ -111,6 +121,16 @@ def IntChoice(maxvalue,globalexcept,localexcept):
                 return choice.lower()
             else:
                 error(2)
+
+class InputError(Exception):
+    def __init__(self,value):
+        self.value=value
+    def __str__(self):
+        return repr(self.value)
+
+with open('errors_m.csv','r') as file:
+    reader = dict(csv.reader(file))
+    Errors=reader
 
 def updateDict(adict,actions,localexcept):
     length=len(adict-len(localexcept))

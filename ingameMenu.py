@@ -17,25 +17,28 @@ def menu(player):
             return var
 
 def disp_inv(player):
-    print("\n~~~YOUR INVENTORY~~~\n")
+    print("\n~~~Your Inventory~~~\n")
     for key in player.inventory:
-        print(univ.ListOfItems[key].name +": " + str(player.inventory[key]))
+        print((univ.ListOfItems[key].name+": ").ljust(15)+str(player.inventory[key]))
         print("   "+univ.ListOfItems[key].desc)
 
 def disp_pos(player):
     from gamemap import Locations
-    print("\n~~~YOUR POSITION~~~\n"
-        "Position: "+Locations[player.position].name)
+    print("Your current position".center(30,"~"),
+        "\nPosition: "+Locations[player.position].name)
 
 def info(player):
-    print("\n~~~OTHER INFO~~~\n"
+    print("\n~~~Other Info~~~\n"
         "\nCreate Time: %s"
         "\nLast Login Time: %s"
-        "\nExperience: %s"%(time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.createtime)),time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.lastlogin)),player.exp['fishing']))
+        %(time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.createtime)),
+         time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.lastlogin))))
+    for k,v in player.exp.items():
+        print((k.title()+":").ljust(20),v)
 
 def save(player):
     player.save()
-    print('saved')
+    print('Your progress has been saved.')
 
 def exit(player):
     from gamemap import quit
@@ -46,7 +49,7 @@ def helptext(player):
     ----------------------------
     History:
     Jerry and Dayu thought of this game as they were walking with Evan and Mummy, along Lake Nordenskjoeld, W-Trek, Patagonia, Chile in late December 2017. 
-    The inspiration came from many hours of idle chat, but at least it encouraged them to do something productive!
+    The inspiration came from many hours of idle chat, but at least it encouraged them to do somethiing productive!
 
     Aim:
     This is a time based game, where you as the player character gather 'fishing juice' to catch fish, upgrade your setup and further your fishing capabilities.
@@ -67,30 +70,54 @@ def back(player):
     print("\nReturning to game...")
     return player,"prev"
 
+slotnames=['Head','Arm 1','Arm 2','Body','Legs','Feet','Accessory 1','Accessory 2','Accessory 3']
+
 def eqptMenu(player):
+    options={1:"Equip items from inventory",2:"Unequip items",0:"Leave"}
     while True:
-        print("\nCurrently equipped:")
+        print("\n===Currently equipped items:===")
         for slot in player.equipment:
             if player.equipment[slot]:
-                print("Slot %s: %s"%(slot,univ.ListOfItems[player.equipment[slot]].name))
-        print("\nEquipment in your inventory:")
-        alleqpt=[]
-        for item in player.inventory:
-            try:
-                if univ.ListOfItems[item].slot and player.inventory[item]:
-                    alleqpt.append(item)
-            except AttributeError as e:
-                pass
-        for num,item in enumerate(alleqpt,1):
-            print(num,univ.ListOfItems[item].name,player.inventory[item])
-        print("x Return")
-        print("Which item do you want to equip?")
-        choice=univ.IntChoice(len(alleqpt),["x"],[])
-        if choice=="x":
-            return
-        else:
-            player.equip(univ.ListOfItems[alleqpt[choice-1]])
+                print("%s: %s"%(slotnames[slot-1],univ.ListOfItems[player.equipment[slot]].name))
+            else:
+                print("%s: None"%slotnames[slot-1])
+        print("\nWhat would you like to do?")
+        for option in options:
+            print(option,options[option])
+        choice=univ.IntChoice(len(options),[],[0])
+        if choice==1:
+            print("\nEquipment in your inventory:")
+            alleqpt=[]
+            for item in player.inventory:
+                try:
+                    if univ.ListOfItems[item].slot and player.inventory[item]:
+                        alleqpt.append(item)
+                except AttributeError as e:
+                    pass
+            for num,item in enumerate(alleqpt,1):
+                print(num,univ.ListOfItems[item].name,player.inventory[item])
+            print("x Return")
+            print("Which item do you want to equip?")
+            choice=univ.IntChoice(len(alleqpt),["x"],[])
+            if choice=="x":
+                return
+            else:
+                player.equip(univ.ListOfItems[alleqpt[choice-1]])
+                player.save()
+        elif choice==2:
+            print("\n===Currently equipped items===")
+            for slot in player.equipment:
+                if player.equipment[slot]:
+                    print("%s: %s"%(slotnames[slot-1],univ.ListOfItems[player.equipment[slot]].name))
+            print("\nWhich slot do you want to unequip?")
+            choice=univ.IntChoice(10,[],[0])
+            if choice==0:
+                return player,menu
+            player.unequip(choice)
             player.save()
+        elif choice==0:
+            return player,menu
+
 
 
 if __name__ == "__main__":

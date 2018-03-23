@@ -7,18 +7,11 @@ ListOfItems = {}
 with open('allitems_m.json', 'r') as file:
     reader = json.load(file)
     for row in reader:
-        if row['iType'] == 'Fish':
-            ThisItem = ic.Fish(**row)
-            ListOfItems[ThisItem.code] = ThisItem
-        elif row['iType'] == 'Bait':
-            ThisItem = ic.Bait(**row)
-            ListOfItems[ThisItem.code] = ThisItem
-        elif row['iType'] == 'Equipment':
-            ThisItem = ic.Equipment(**row)
-            ListOfItems[ThisItem.code] = ThisItem
-        else:
-            ThisItem = ic.Item(**row)
-        ListOfItems[ThisItem.code] = ThisItem
+        try:
+            ThisItem=getattr(ic,row['iType'])(**row)
+        except AttributeError as e:
+            ThisItem=getattr(ic,"Item")(**row)
+        ListOfItems[ThisItem.code]=ThisItem
 
 class Player(object):
     def __init__(self,username,password,createtime,lastlogin,exp,inventory,position,equipment,*args):

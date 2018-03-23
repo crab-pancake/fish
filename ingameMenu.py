@@ -5,7 +5,7 @@ import time
 def menu(player):
     menu_options = {1:("Display Inventory",disp_inv),2:("Display Position",disp_pos),3:("Other Info",info),4:("Save",save),5:("Back to game",back),6:("Help", helptext),7:("Equipment",eqptMenu),0:("Exit Game",exit)}
     while True:
-        print("\n~~~MENU~~~\n")
+        print("\n"+"MENU".center(30,'=')+"\n")
         for key in menu_options:
             print(str(key)+". "+menu_options[key][0])
         print("\nEnter the corresponding number:\n")
@@ -15,22 +15,22 @@ def menu(player):
         var = menu_options[choice][1](player)
         if var:
             return var
+        input("Press enter to continue.")
 
 def disp_inv(player):
-    print("\n~~~Your Inventory~~~\n")
+    print("\n"+"Your Inventory".center(24,'~')+'\n')
     for key in player.inventory:
-        print((univ.ListOfItems[key].name+": ").ljust(15)+str(player.inventory[key]))
-        print("   "+univ.ListOfItems[key].desc)
+        print((univ.Items[key].name+": ").ljust(15)+str(player.inventory[key]))
+        print("   "+univ.Items[key].desc)
 
 def disp_pos(player):
     from gamemap import Locations
-    print("Your current position".center(30,"~"),
-        "\nPosition: "+Locations[player.position].name)
+    print("Your current position: "+Locations[player.position].name)
 
 def info(player):
-    print("\n~~~Other Info~~~\n"
-        "\nCreate Time: %s"
-        "\nLast Login Time: %s"
+    print("\n"+"Other Info".center(24,'~')+
+        "\n\nCreate Time: %s"
+        "\nLast Login Time: %s\n\n===Experience==="
         %(time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.createtime)),
          time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.lastlogin))))
     for k,v in player.exp.items():
@@ -75,10 +75,10 @@ slotnames=['Head','Arm 1','Arm 2','Body','Legs','Feet','Accessory 1','Accessory 
 def eqptMenu(player):
     options={1:"Equip items from inventory",2:"Unequip items",0:"Leave"}
     while True:
-        print("\n===Currently equipped items:===")
+        print("\n===Currently equipped items===")
         for slot in player.equipment:
             if player.equipment[slot]:
-                print("%s: %s"%(slotnames[slot-1],univ.ListOfItems[player.equipment[slot]].name))
+                print("%s: %s"%(slotnames[slot-1],univ.Items[player.equipment[slot]].name))
             else:
                 print("%s: None"%slotnames[slot-1])
         print("\nWhat would you like to do?")
@@ -90,25 +90,25 @@ def eqptMenu(player):
             alleqpt=[]
             for item in player.inventory:
                 try:
-                    if univ.ListOfItems[item].slot and player.inventory[item]:
+                    if univ.Items[item].slot and player.inventory[item]:
                         alleqpt.append(item)
                 except AttributeError as e:
                     pass
             for num,item in enumerate(alleqpt,1):
-                print(num,univ.ListOfItems[item].name,player.inventory[item])
+                print(num,univ.Items[item].name,player.inventory[item])
             print("x Return")
             print("Which item do you want to equip?")
             choice=univ.IntChoice(len(alleqpt),["x"],[])
             if choice=="x":
                 return
             else:
-                player.equip(univ.ListOfItems[alleqpt[choice-1]])
+                player.equip(univ.Items[alleqpt[choice-1]])
                 player.save()
         elif choice==2:
             print("\n===Currently equipped items===")
             for slot in player.equipment:
                 if player.equipment[slot]:
-                    print("%s: %s"%(slotnames[slot-1],univ.ListOfItems[player.equipment[slot]].name))
+                    print("%s: %s"%(slotnames[slot-1],univ.Items[player.equipment[slot]].name))
             print("\nWhich slot do you want to unequip?")
             choice=univ.IntChoice(10,[],[0])
             if choice==0:
@@ -117,7 +117,6 @@ def eqptMenu(player):
             player.save()
         elif choice==0:
             return player,menu
-
 
 
 if __name__ == "__main__":

@@ -6,11 +6,10 @@
     "iType": "Bait",
     "exp": 0,
     "minlvl": 0,
-    "acceptP": 0,
-    "vendP": 0,
+    "acceptP": 10,
+    "vendP": 5,
     "slot": 0,
-    "adtl effects":[],
-    "login effects":[]
+    "adtl effects":[]
   },
   {
     "code": "i00001",
@@ -22,8 +21,7 @@
     "acceptP": 0,
     "vendP": 0,
     "slot": 0,
-    "adtl effects":[],
-    "login effects":[]
+    "adtl effects":[]
   },
   {
     "code": "i01001",
@@ -35,8 +33,7 @@
     "acceptP": 3,
     "vendP": 0,
     "slot": 0,
-    "adtl effects":[],
-    "login effects":[]
+    "adtl effects":[]
   },
   {
     "code": "i01002",
@@ -48,8 +45,7 @@
     "acceptP": 4,
     "vendP": 0,
     "slot": 0,
-    "adtl effects":[],
-    "login effects":[]
+    "adtl effects":[]
   },
   {
     "code": "i01003",
@@ -61,8 +57,7 @@
     "acceptP": 100,
     "vendP": 0,
     "slot": 0,
-    "adtl effects":[],
-    "login effects":[]
+    "adtl effects":[]
   },
   {
     "code": "i01004",
@@ -74,8 +69,7 @@
     "acceptP": 6,
     "vendP": 0,
     "slot": 0,
-    "adtl effects":[],
-    "login effects":[]
+    "adtl effects":[]
   },
   {
     "code": "i01005",
@@ -87,8 +81,7 @@
     "acceptP": 8,
     "vendP": 0,
     "slot": 0,
-    "adtl effects":[],
-    "login effects":[]
+    "adtl effects":[]
   },
   {
     "code": "i01006",
@@ -100,8 +93,7 @@
     "acceptP": 13,
     "vendP": 0,
     "slot": 0,
-    "adtl effects":[],
-    "login effects":[]
+    "adtl effects":[]
   },
   {
     "code": "i02001",
@@ -113,8 +105,8 @@
     "acceptP": 0,
     "vendP": 0,
     "slot": 2,
-    "adtl effects":[],
-    "login effects":[]
+    "equip":[{"login":[{"i00000":0.02}]}],
+    "adtl effects":[]
   },
   {
     "code": "i02002",
@@ -126,8 +118,8 @@
     "acceptP": 0,
     "vendP": 0,
     "slot": 2,
-    "adtl effects":[],
-    "login effects":[]
+    "equip":[{"login":[{"i00000":0.05}]}],
+    "adtl effects":[]
   },
   {
     "code": "i02003",
@@ -139,8 +131,8 @@
     "acceptP": 0,
     "vendP": 0,
     "slot": 2,
-    "adtl effects":[],
-    "login effects":[]
+    "equip":[{"login":[{"i00000":0.1}]}],
+    "adtl effects":[]
   },
   {
     "code": "i02004",
@@ -152,7 +144,7 @@
     "acceptP": 0,
     "vendP": 0,
     "slot": 2,
-    "adtl effects":[],
-    "login effects":[]
+    "equip":[{"login":[{"i00000":0.15}]}],
+    "adtl effects":[]
   }
 ]

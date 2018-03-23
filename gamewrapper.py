@@ -19,20 +19,32 @@ def mover(player):
             nextAction=prevAction
     return player
 
-def relog(player):
-    FJmult=0
-    if player.equipment[1]:
-        print("You have a %s. This gives you %s percent more fishjuice."%(univ.ListOfItems[player.equipment[1]].name,0))
-    player.inventory['i00000']+=min(99,int(player.hsll))*(1+FJmult)
+def looper(player):
+    choice=input("What do you want to do?")
+    # Display the different menu options here: 
+    # Change password, change equipment, view news
+
+def relog(p):
+    MultDict=[]
+    for slot in p.equipment:
+        if p.equipment[slot]:
+            for item in univ.Items[p.equipment[slot].equipeffects['login']]:
+                pass
+    # if p.equipment[1]:
+    #     print("You have a %s. This gives you %s percent more fishjuice."%(univ.Items[p.equipment[1]].name,0))
+    p.inventory['i00000']+=min(99,int(p.hsll))*(1+FJmult)
 
 def start_acct(uname):
     with open('./PlayerAccts/'+uname+'_p.json', 'r') as file:
         reader = json.load(file)
         player = univ.Player(**reader)
+        import moderating
+        moderating.update(player.username)
+        print("Bank:",player.bank)
         if player.lastlogin == 0: # If this is the first access of the game, then lastlogin == 0
             print('running first mode') #for debug purposes
             player.updatetime()
-            player.inventory = dict.fromkeys(univ.ListOfItems,0)
+            player.inventory = dict.fromkeys(univ.Items,0)
             player.inventory['i00000'] += 10  # when account is created, 10 fishing juice is given
             player.save()
             print("Welcome to the game, %s! This is your first login.\n"
@@ -59,7 +71,7 @@ def start_acct(uname):
 
 if __name__ == "__main__":
     with open('./PlayerAccts/test_acct_p.json', 'w') as file:
-        stats = {"username":"test_acct", "password":"","createtime":time.time(),"lastlogin":0,
-            "exp":dict.fromkeys(univ.skills,0),"inventory":dict.fromkeys(univ.ListOfItems,0),"position": "000", "equipment":dict.fromkeys(range(1,10),None)}
+        stats = {"username":"test_acct", "password":"","createtime":time.time(),"lastlogin":0,"exp":dict.fromkeys(univ.skills,0),
+                 "inventory":dict.fromkeys(univ.Items,0),"position": "000", "equipment":dict.fromkeys(range(1,10),None),"bank":{}}
         json.dump(stats, file)
     start_acct('test_acct')

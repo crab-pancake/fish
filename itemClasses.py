@@ -1,13 +1,13 @@
 class Item(object):
     """items"""
     def __init__(self,code,name,desc,exp,acceptP,vendP,**kwargs):
-        self.code = code
-        self.name = name
-        self.desc = desc
-        self.exp = int(exp)
-        self.acceptP = int(acceptP) # shop buys from player
-        self.vendP = int(vendP) # shop sells to player
-        self.type = 'other'
+        self.code=code
+        self.name=name
+        self.desc=desc
+        self.exp=int(exp)
+        self.acceptP=int(acceptP) # shop buys from player
+        self.vendP=int(vendP) # shop sells to player
+        self.type='other'
     def __str__(self):
         return "Item with code %s, name %s" % (self.code, self.name)
     def __repr__(self):
@@ -20,7 +20,7 @@ class Item(object):
 class Fish(Item):
     def __init__(self,code,name,desc,exp,acceptP,vendP,minlvl,**kwargs):
         super().__init__(code,name,desc,exp,acceptP,vendP,**kwargs)
-        self.type = 'fish'
+        self.type='fish'
         self.minlvl=int(minlvl)
     def __str__(self):
         return "Fish item with code %s, name %s" % (self.code, self.name)
@@ -39,17 +39,18 @@ class Bait(Item):
 class Material(Item):
     def __init__(self,code,name,desc,exp,acceptP,vendP,**kwargs):
         super().__init__(code,name,desc,exp,acceptP,vendP,**kwargs)
-        self.type = 'material'
+        self.type='material'
     def __str__(self):
         return "Material item with code %s, name %s" % (self.code, self.name)
     def __repr__(self):
         return "Material(%r, %r, %r, %r)" % (self.code, self.name, self.desc, self.exp)
 
 class Equipment(Item):
-    def __init__(self,code,name,desc,exp,acceptP,vendP,slot,**kwargs):
+    def __init__(self,code,name,desc,exp,acceptP,vendP,slot,equip,**kwargs):
         super().__init__(code,name,desc,exp,acceptP,vendP,**kwargs)
         self.type='equipment'
         self.slot=slot
+        self.equipeffects=equip
     def __str__(self):
         return "Equipment item with code %s, name %s" % (self.code, self.name)
     def __repr__(self):

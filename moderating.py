@@ -20,12 +20,6 @@ def update(username):
         with open('./PlayerAccts/%s_p.json'%(username), 'r') as file:
             reader = json.load(file)
             try:
-                reader['createtime']=int(reader['create time'])
-                reader['lastlogin']=int(reader['last login'])
-            except KeyError:
-                reader['createtime']=int(reader['createtime'])
-                reader['lastlogin']=int(reader['lastlogin'])
-            try:
                 if not reader['equipment']:
                     reader['equipment']=dict.fromkeys(range(1,10),None)
             except KeyError:
@@ -37,7 +31,7 @@ def update(username):
                     newdict[key]=player.inventory[key]
                 else:
                     newdict['i'+key]=player.inventory[key]
-            for item in univ.ListOfItems.keys():
+            for item in univ.Items.keys():
                 newdict[item]=player.inventory.get(item,0)
             player.inventory=newdict
             for skill in univ.skills:

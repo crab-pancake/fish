@@ -15,7 +15,7 @@ with open('allitems_m.json', 'r') as file:
 
 class Player(object):
     """A player object"""
-    def __init__(self,username,password,createtime,lastlogin,exp,inventory,position,equipment,*args):
+    def __init__(self,username,password,createtime,lastlogin,exp,inventory,position,equipment,**kwargs):
         self.username = username
         self.password = password
         self.createtime = createtime
@@ -38,11 +38,6 @@ class Player(object):
         print("You have %s %s." % (self.inventory[currency],Items[currency].name))
     def help_display(self):
         print("HELP\n")
-    def relog(self):
-        for slot,item in self.equipment.items():
-            if item:
-                print(Items[item].name)
-        self.inventory['i00000']+=int(self.hsll)
     def equip(self,item):
         try:
             if item.slot: # if !=0

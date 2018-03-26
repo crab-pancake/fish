@@ -4,9 +4,12 @@ import json
 import itemClasses as ic
 
 Items = {}
+RegenItems=[]
 with open('allitems_m.json', 'r') as file:
     reader = json.load(file)
     for row in reader:
+        if row['baseRegen']:
+            RegenItems.append(row['code'])
         try:
             ThisItem=getattr(ic,row['iType'])(**row)
         except AttributeError as e:
@@ -35,9 +38,7 @@ class Player(object):
         with open('./PlayerAccts/'+self.username+'_p.json', 'w') as file:
             json.dump(self.__dict__, file)
     def disp_currency(self, currency):
-        print("You have %s %s." % (self.inventory[currency],Items[currency].name))
-    def help_display(self):
-        print("HELP\n")
+        print("You have %s %s."%(self.inventory[currency],Items[currency].name))
     def equip(self,item):
         try:
             if item.slot: # if !=0
@@ -116,5 +117,9 @@ def updateDict(adict,actions,localexcept):
     for item in actions:
         adict[length+1]=item
         length+=1
+
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
 
 # exptable = {10x^2 for x in range(1,1000)}y=15x^{2.4}+42

@@ -25,7 +25,7 @@ def looper(player):
     # Change password, change equipment, view news
 
 def relog(p):
-    MultDict={"i00000":0} # fromkeys(items which regen over time,0)
+    MultDict=dict.fromkeys(univ.RegenItems,0)
     for slot in p.equipment:
         if p.equipment[slot]:
             for item,pct in univ.Items[p.equipment[slot]].equipeffects['login'].items():
@@ -33,7 +33,8 @@ def relog(p):
                 print("Your %s gives you %s percent more %s per hour."
                     %(univ.Items[p.equipment[slot]].name,pct*100,univ.Items[item].name))
     for item,pct in MultDict.items():
-        p.inventory[item]+=min(99,int(p.hsll*(1+pct))) # 1+pct changes to base_rate*(1+pct)
+        p.inventory[item]+=min(99,int(p.hsll*(univ.Items[item].baseRegen*(1+pct))))
+        print("You've acquired [ %s ] more %s since your last login.\n"%(min(99,int(p.hsll*(1+pct))),univ.Items[item].name))
 
 def start_acct(uname):
     with open('./PlayerAccts/'+uname+'_p.json', 'r') as file:
@@ -51,26 +52,24 @@ def start_acct(uname):
                 %(player.username, time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(player.createtime))))
             mover(player)
 
-        elif player.lastlogin-player.createtime>0: 
+        elif player.lastlogin>player.createtime: 
             print('running second mode') #for debug purposes
-            player.updatetime()
-            relog(player)
-            player.save()
             print("___________________\n"
                   "Welcome back to the game, %s!\n"
                   "Account creation time: %s\n"
-                  "Time since last login: %s hrs, %s mins\n\n"
-                  "You've acquired [ %s ] unit(s) of fishing juice since the last login.\n"   
-                  "HINT: you get 1 unit of juice per hour elapsed between the current and last logins.\n" 
-                  %(player.username, time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(player.createtime)), int(player.hsll), int((player.hsll*60)%60), int(player.hsll)))
+                  "Time since last login: %s hrs, %s mins\n"
+                  %(player.username, time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(player.createtime)), int(player.hsll), int((player.hsll*60)%60)))
+            player.updatetime()
+            relog(player)
+            player.save()
             mover(player)
 
-        elif player.lastlogin - player.createtime < 0:
-            print("Error happened.")
+        elif player.lastlogin<player.createtime:
+            raise univ.Error("Player file corrupted. Please contact support.")
 
 def main():
     with open('./PlayerAccts/test_acct_p.json', 'w') as file:
-        stats = {"username":"test_acct", "password":"","createtime":time.time(),"lastlogin":0,"exp":dict.fromkeys(univ.skills,0),
+        stats = {"username":"test_acct", "password":"password","createtime":int(time.time()),"lastlogin":0,"exp":dict.fromkeys(univ.skills,0),
                  "inventory":dict.fromkeys(univ.Items,0),"position": "000", "equipment":dict.fromkeys(range(1,10),None),"bank":{}}
         json.dump(stats, file)
     start_acct('test_acct')

@@ -121,7 +121,7 @@ class Shop(Place):
         self.acceptList=[]
         self.stock={}
         self.lasttime=0
-        with open('./locations/'+self.code+"_s.json", 'r') as file:
+        with open('./locations/'+self.code+'_s.json', 'r') as file:
             reader = json.load(file)
             self.lasttime=reader['lasttime']
             self.stock=reader['stock']
@@ -289,11 +289,9 @@ Locations = {}
 with open('locations_l.csv', 'r') as file:
     reader = csv.DictReader(file)
     for row in reader:
-        location = Location(**row)
-        Locations[row['code']] = location
+        Locations[row['code']] = Location(**row)
 
-if __name__ == "__main__":
-    reader=''
+def main():
     with open('./PlayerAccts/test_acct_p.json', 'r') as file:
         reader = json.load(file)
     player = univ.Player(**reader)
@@ -311,3 +309,5 @@ if __name__ == "__main__":
         else:
             myTuple=nextAction
 
+if __name__ == "__main__":
+    main()

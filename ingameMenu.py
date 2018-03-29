@@ -3,7 +3,14 @@ import json
 import time
 
 def menu(player):
-    menu_options = {1:("Display Inventory",disp_inv),2:("Display Position",disp_pos),3:("Other Info",info),4:("Save",save),5:("Back to game",back),6:("Help", helptext),7:("Equipment",eqptMenu),0:("Exit Game",exit)}
+    menu_options = {1:("Display Inventory",disp_inv),
+        2:("Display Position",disp_pos),
+        3:("Other Info",info),
+        4:("Save",save),
+        5:("Back to game",back),
+        6:("Help", helptext),
+        7:("Equipment",eqptMenu),
+        0:("Exit Game",exit)}
     while True:
         print("\n"+"MENU".center(30,'=')+"\n")
         for key in menu_options:
@@ -28,8 +35,7 @@ def disp_pos(player):
     print("Your current position: "+Locations[player.position].name)
 
 def info(player):
-    print("\n"+"Other Info".center(24,'~')+
-        "\n\nCreate Time: %s"
+    print("\n"+"Other Info".center(24,'~')+"\n\nCreate Time: %s"
         "\nLast Login Time: %s\n\n===Experience==="
         %(time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.createtime)),
          time.strftime('%d-%m-%Y %H:%M:%S',time.localtime(player.lastlogin))))
@@ -118,10 +124,11 @@ def eqptMenu(player):
         elif choice==0:
             return player,menu
 
-
-if __name__ == "__main__":
-    reader=''
+def main():
     with open('./PlayerAccts/test_acct_p.json', 'r') as file:
         reader = json.load(file)
     player = univ.Player(**reader)
     menu(player)
+
+if __name__ == "__main__":
+    main()

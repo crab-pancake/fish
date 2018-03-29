@@ -40,7 +40,7 @@ def load(player):
     collect = univ.IntChoice(player.inventory["i00000"]+1, ['x'],[0])
     if collect == 'x' or collect == 0:
         return
-    else:   
+    else:
         while collect>0:
             collect-=1
             player.inventory["i00000"] -=1
@@ -66,10 +66,13 @@ def load(player):
             print("You have successfully fished a %s. This is a [%s] item.You have %s %s." % (chosen_item_name, rarity_new[chosen_rarity-1][0], player.inventory[chosen_item], chosen_item_name))
         player.save()
 
-if __name__ == '__main__':
-    reader=''
+def main():
     with open('./PlayerAccts/test_acct_p.json', 'r') as file:
         reader = json.load(file)
     player = univ.Player(**reader)
     while True:
         load(player)
+
+if __name__ == '__main__':
+    main()
+    

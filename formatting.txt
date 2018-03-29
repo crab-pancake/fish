@@ -3,7 +3,6 @@
 p: player file
 
 t: loot table
-l: location
 s: shop
 something else for other types of interactables?
 m: misc. file
